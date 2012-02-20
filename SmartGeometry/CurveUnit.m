@@ -661,12 +661,12 @@
             SCPoint* currentPoint = [pointList objectAtIndex:i];
             SCPoint* nextPoint = [pointList objectAtIndex:i+1];
             
-//            if((currentPoint.y < lastPoint.y && currentPoint.y < nextPoint.y) || (currentPoint.y > lastPoint.y && currentPoint.y > nextPoint.y))
-//            {
-//                [newSpecialPointList addObject:currentPoint];
-//                [arcIndexArray addObject:[[NSNumber alloc]initWithInt:i]];
-//                [arcBoolArray addObject:[[NSNumber alloc]initWithBool:NO]];
-//            }
+            if((currentPoint.y < lastPoint.y && currentPoint.y < nextPoint.y) || (currentPoint.y > lastPoint.y && currentPoint.y > nextPoint.y))
+            {
+                [newSpecialPointList addObject:currentPoint];
+                [arcIndexArray addObject:[[NSNumber alloc]initWithInt:i]];
+                [arcBoolArray addObject:[[NSNumber alloc]initWithBool:NO]];
+            }
             
             if((currentPoint.x < lastPoint.x && currentPoint.x < nextPoint.x) || (currentPoint.x > lastPoint.x && currentPoint.x > nextPoint.x))
             {
@@ -922,91 +922,91 @@
         NSMutableArray* tempPointList = [[NSMutableArray alloc]init];
         arcUnitArray = [[NSMutableArray alloc]init];
    
-     //分解圆弧
-     for(int i=1; i<[arcIndexArray count]; i++)
-     {
-         NSNumber* tempBoolNumber = [arcBoolArray objectAtIndex:i-1];
-         bool tempBool = [tempBoolNumber boolValue];
-         
-         isArcGroup = YES;
-         [tempPointList removeAllObjects];
-         
-         NSNumber* lastNumber = [arcIndexArray objectAtIndex:i-1];
-         int lastIndex = [lastNumber intValue];
-         
-         NSNumber* currentNumber = [arcIndexArray objectAtIndex:i];
-         int currentIndex = [currentNumber intValue];
-         
-         for(int j=lastIndex; j<=currentIndex; j++)
-         {
-             [tempPointList addObject:[newPointList objectAtIndex:j]];
-         }
-         
-         CurveUnit* tempCurveUnit = [[CurveUnit alloc]init];
-         
-         if(i == 1)
-         {
-             tempCurveUnit = [self produceArcUnitWithPointList:tempPointList LastCenter:NULL];
-         }
-         else
-         {
-             CurveUnit* lastCurveUnit = [arcUnitArray lastObject];
-             tempCurveUnit = [self produceArcUnitWithPointList:tempPointList LastCenter:lastCurveUnit.center];
-         }
-         
-         if(tempCurveUnit != NULL)
-         {
-             [arcUnitArray addObject:tempCurveUnit];
-         }
-         else
-         {
-             isArcGroup = NO;
-             break;
-         }
-     }
-     // test
-     if(isArcGroup)
-         return;
+//     //分解圆弧
+//     for(int i=1; i<[arcIndexArray count]; i++)
+//     {
+//         NSNumber* tempBoolNumber = [arcBoolArray objectAtIndex:i-1];
+//         bool tempBool = [tempBoolNumber boolValue];
+//         
+//         isArcGroup = YES;
+//         [tempPointList removeAllObjects];
+//         
+//         NSNumber* lastNumber = [arcIndexArray objectAtIndex:i-1];
+//         int lastIndex = [lastNumber intValue];
+//         
+//         NSNumber* currentNumber = [arcIndexArray objectAtIndex:i];
+//         int currentIndex = [currentNumber intValue];
+//         
+//         for(int j=lastIndex; j<=currentIndex; j++)
+//         {
+//             [tempPointList addObject:[newPointList objectAtIndex:j]];
+//         }
+//         
+//         CurveUnit* tempCurveUnit = [[CurveUnit alloc]init];
+//         
+//         if(i == 1)
+//         {
+//             tempCurveUnit = [self produceArcUnitWithPointList:tempPointList LastCenter:NULL];
+//         }
+//         else
+//         {
+//             CurveUnit* lastCurveUnit = [arcUnitArray lastObject];
+//             tempCurveUnit = [self produceArcUnitWithPointList:tempPointList LastCenter:lastCurveUnit.center];
+//         }
+//         
+//         if(tempCurveUnit != NULL)
+//         {
+//             [arcUnitArray addObject:tempCurveUnit];
+//         }
+//         else
+//         {
+//             isArcGroup = NO;
+//             break;
+//         }
+//     }
+//     // test
+//     if(isArcGroup)
+//         return;
    
-//   //分解插值
-//   for(int i=1; i<[arcIndexArray count]; i++)
-//        {
-//            isSplineGroup = YES;
-//            [tempPointList removeAllObjects];
-//            
-//            NSNumber* lastNumber = [arcIndexArray objectAtIndex:i-1];
-//            int lastIndex = [lastNumber intValue];
-//            
-//            NSNumber* currentNumber = [arcIndexArray objectAtIndex:i];
-//            int currentIndex = [currentNumber intValue];
-//            
-//            for(int j=lastIndex; j<=currentIndex; j++)
-//            {
-//                [tempPointList addObject:[newPointList objectAtIndex:j]];
-//            }
-//
-//            CurveUnit* tempCurveUnit = [[CurveUnit alloc]initWithPointArray:tempPointList];
-//            
-//            tempCurveUnit.type = 3;
-//            NSNumber* tempBoolNumber = [arcBoolArray objectAtIndex:i-1];
-//            bool tempBool = [tempBoolNumber boolValue];
-//            if(tempBool)
-//            {
-//                tempCurveUnit.isYDecrease = YES;
-//                tempCurveUnit.isYIncrease = YES;
-//                tempCurveUnit.isXDecrease = NO;
-//                tempCurveUnit.isXIncrease = NO;
-//            }
-//            else
-//            {
-//                tempCurveUnit.isXDecrease = YES;
-//                tempCurveUnit.isXIncrease = YES;
-//                tempCurveUnit.isYDecrease = NO;
-//                tempCurveUnit.isYIncrease = NO;
-//            }
-//            [tempCurveUnit calculateCubicSplineWithPointList:tempPointList];
-//            [arcUnitArray addObject:tempCurveUnit];
-//        }
+   //分解插值
+   for(int i=1; i<[arcIndexArray count]; i++)
+        {
+            isSplineGroup = YES;
+            [tempPointList removeAllObjects];
+            
+            NSNumber* lastNumber = [arcIndexArray objectAtIndex:i-1];
+            int lastIndex = [lastNumber intValue];
+            
+            NSNumber* currentNumber = [arcIndexArray objectAtIndex:i];
+            int currentIndex = [currentNumber intValue];
+            
+            for(int j=lastIndex; j<=currentIndex; j++)
+            {
+                [tempPointList addObject:[newPointList objectAtIndex:j]];
+            }
+
+            CurveUnit* tempCurveUnit = [[CurveUnit alloc]initWithPointArray:tempPointList];
+            
+            tempCurveUnit.type = 3;
+            NSNumber* tempBoolNumber = [arcBoolArray objectAtIndex:i-1];
+            bool tempBool = [tempBoolNumber boolValue];
+            if(tempBool)
+            {
+                tempCurveUnit.isYDecrease = YES;
+                tempCurveUnit.isYIncrease = YES;
+                tempCurveUnit.isXDecrease = NO;
+                tempCurveUnit.isXIncrease = NO;
+            }
+            else
+            {
+                tempCurveUnit.isXDecrease = YES;
+                tempCurveUnit.isXIncrease = YES;
+                tempCurveUnit.isYDecrease = NO;
+                tempCurveUnit.isYIncrease = NO;
+            }
+            [tempCurveUnit calculateCubicSplineWithPointList:tempPointList];
+            [arcUnitArray addObject:tempCurveUnit];
+        }
     }
 }
 
