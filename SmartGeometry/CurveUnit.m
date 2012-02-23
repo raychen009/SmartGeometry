@@ -17,8 +17,8 @@
 @synthesize isAntiClockCurve,isEllipse,isCompleteCurve,isHalfCurve,isArcGroup,isSplineGroup;
 @synthesize isXDecrease,isXIncrease,isYDecrease,isYIncrease,hasSecondJudge;
 @synthesize curveType;
-@synthesize center,move,f1,f2,testE,testS,curveTrack,newDrawPointList,newSpecialPointList,arcIndexArray,arcUnitArray,artBoolArray;
-
+@synthesize center,move,f1,f2,testE,testS;
+@synthesize curveTrack,newDrawPointList,newSpecialPointList,arcIndexArray,arcUnitArray,artBoolArray,newDrawSecCurveTrack;
 @synthesize px,py,ph,psx;
 
 - (id)init
@@ -49,6 +49,7 @@
         arcIndexArray = [[NSMutableArray alloc]init];
         arcUnitArray = [[NSMutableArray alloc]init];
         arcBoolArray = [[NSMutableArray alloc]init];
+        newDrawSecCurveTrack = [[NSMutableArray alloc]init];
     }
     
     return self;
@@ -180,6 +181,7 @@
         }
         [self setStartTOEndAntiClockWithPointArray:pointList];
         [self calculateStartAndEndAngle];
+        [self calculateNewDrawSecCurveTrack];
     }
     else
     {
@@ -529,6 +531,55 @@
     if(![self hasSecondJudge])
         [self secondJudgeIsCompleteCurveWithPointArray:pointList];
     
+}
+
+-(NSMutableArray*)calculateNewDrawSecCurveTrack
+{
+    if(self.type == 2 && curveType == 1)
+    {
+        [newDrawSecCurveTrack removeAllObjects];
+        
+        int leftFocusX=0,leftFocusY=0;          //左焦点
+        int rightFocusX=0,rightFocusY=0;        //右焦点
+        bool ellipseBool = YES;                 //默认是椭圆
+        float focusLength = sqrtf(abs(majorAxis*majorAxis - minorAxis*minorAxis));
+        if(majorAxis > minorAxis)
+        {
+            leftFocusX  = (int)focusLength;
+            rightFocusX = -(int)focusLength;
+        }
+        else if(minorAxis == majorAxis)
+        {
+            ellipseBool = NO;
+        }
+        else if(majorAxis < minorAxis)
+        {
+            leftFocusY  = (int)focusLength;
+            rightFocusY = -(int)focusLength;
+        }
+        
+        float startAngleLocal,endAngleLocal;
+        [self calculateStartAndEndAngleWithStartAngle:startAngleLocal EndAngle:endAngleLocal];
+        
+        float a = fabsf(majorAxis);
+        float b = fabsf(minorAxis);
+        
+        //计算起始点和终止点后先画出椭圆曲线
+        float add = 2*PI/draw_circle_increment;
+        float x,y;
+        x = (a*cosf(startAngle));
+        y = (b*sinf(startAngle));
+        [self translateAndRotationWithX:&x Y:&y Theta:alpha Point:[[SCPoint alloc]initWithX:move.x andY:move.y]];
+        [newDrawSecCurveTrack addObject:[[SCPoint alloc]initWithX:x andY:y]];
+        
+        for(float i=startAngle; i<=endAngle; i+=add)
+        {
+            x = a*cosf(i);
+            y = b*sinf(i);
+            [self translateAndRotationWithX:&x Y:&y Theta:alpha Point:[[SCPoint alloc]initWithX:move.x andY:move.y]];
+            [newDrawSecCurveTrack addObject:[[SCPoint alloc]initWithX:x andY:y]];
+        }
+    }
 }
 
 -(NSMutableArray*)findSpecialPointWithPointList:(NSMutableArray*)pointListTemp
@@ -1480,9 +1531,23 @@
     }
     else
     {
-        CGContextTranslateCTM(context, move.x, move.y);
-        CGContextRotateCTM(context, alpha);
-        [self drawEllipseArcWithContext:context];
+//        CGContextTranslateCTM(context, move.x, move.y);
+//        CGContextRotateCTM(context, alpha);
+//        [self drawEllipseArcWithContext:context];
+        CGMutablePathRef path = CGPathCreateMutable();
+        SCPoint* pointTempAt0 = [newDrawSecCurveTrack objectAtIndex:0];
+        CGPathMoveToPoint(path, NULL, pointTempAt0.x, pointTempAt0.y);
+        
+        for(float i=1; i<[newDrawSecCurveTrack count]; i++)
+        {
+            SCPoint* pointTemp = [newDrawSecCurveTrack objectAtIndex:i];
+            CGPathAddLineToPoint(path, NULL, pointTemp.x, pointTemp.y);
+        }
+        CGContextSetLineWidth(context, 5.0f);
+        CGContextSetStrokeColorWithColor(context, [UIColor blackColor].CGColor);
+        CGContextAddPath(context, path);
+        CGContextStrokePath(context);
+        CGPathRelease(path);
     }
     
     if(isCompleteCurve)
@@ -1498,6 +1563,7 @@
 {
     float a = fabsf(majorAxis);
     float b = fabsf(minorAxis);
+    
     //计算起始点和终止点后先画出椭圆曲线
     float add = 2*PI/draw_circle_increment;
     float x,y;
@@ -1506,6 +1572,8 @@
     
     CGMutablePathRef path = CGPathCreateMutable();
     CGPathMoveToPoint(path, NULL, x, y);
+    
+    
     for(float i=startAngle; i<=endAngle; i+=add)
     {
         x = a*cosf(i);

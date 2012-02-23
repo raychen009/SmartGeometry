@@ -45,7 +45,10 @@
     SCPoint* testS;
     SCPoint* testE;
     
-    NSMutableArray* curveTrack;     //非二次曲线轨迹
+    NSMutableArray* curveTrack;         //曲线原始轨迹
+    
+    NSMutableArray* newDrawSecCurveTrack;
+    
     NSMutableArray* newDrawPointList;
     NSMutableArray* newSpecialPointList;
     
@@ -108,6 +111,7 @@
 @property (retain) NSMutableArray* arcIndexArray;
 @property (retain) NSMutableArray* arcUnitArray;
 @property (retain) NSMutableArray* artBoolArray;
+@property (retain) NSMutableArray* newDrawSecCurveTrack;
 
 //构造函数
 -(id)initWithSPoint:(SCPoint*)startPoint EPoint:(SCPoint*)endPoint;
@@ -118,8 +122,11 @@
 //进行三次样条插值的计算
 -(NSMutableArray*)calculateCubicNewDrawPointList:(NSMutableArray*)newPointList;
 -(void)calculateCubicSplineWithPointList:(NSMutableArray*)pointList;
-//寻找适合三次样条插值计算的特殊点
 -(NSMutableArray*)findSpecialPointWithPointList:(NSMutableArray*)pointListTemp;
+
+
+//计算画新椭圆曲线的轨迹
+-(NSMutableArray*)calculateNewDrawSecCurveTrack;
 
 //圆弧分解计算相关函数
 -(float)calculateSlopeWithPoint1:(SCPoint*)point1 Point2:(SCPoint*)point2;

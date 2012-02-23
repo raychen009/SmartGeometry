@@ -9,25 +9,11 @@
          continueAfterRunningActions = "No"
          isPathRelative = "1"
          filePath = "SmartGeometry/CurveUnit.m"
-         timestampString = "351614801.472989"
+         timestampString = "351686884.354096"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "181"
-         endingLineNumber = "181"
-         landmarkName = "-judgeCurveWithPointArray:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         isPathRelative = "1"
-         filePath = "SmartGeometry/CurveUnit.m"
-         timestampString = "351624323.841399"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "519"
-         endingLineNumber = "519"
+         startingLineNumber = "521"
+         endingLineNumber = "521"
          landmarkName = "-setStartTOEndAntiClockWithPointArray:"
          landmarkType = "5">
       </FileBreakpoint>
