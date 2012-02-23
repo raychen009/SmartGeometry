@@ -179,16 +179,16 @@
             self.end.y = self.start.y;
         }
         [self setStartTOEndAntiClockWithPointArray:pointList];
+        [self calculateStartAndEndAngle];
     }
     else
     {
         //非二次曲线
         self.type        = 3;
         curveTrack  = pointList;
-//        NSMutableArray* newPointList = [self findSpecialPointWithPointList:pointList];
         [self calculateCubicSplineWithPointList:pointList];
+        [self calculateStartAndEndAngle];
     }
-    [self calculateStartAndEndAngle];
 }
 
 -(void)setOriginalAlpha
