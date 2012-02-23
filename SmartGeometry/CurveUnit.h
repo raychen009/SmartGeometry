@@ -29,6 +29,7 @@
     
     float startAngle,endAngle;      //画弧线时的起始角和终止角（并非是起始点，终点和原点的连线与坐标轴的夹角）在画二次曲线时有作用
     
+    bool isAntiClockCurve;          //表示这段曲线为逆时针曲线
     bool isEllipse;                 //椭圆为yes,圆形为no
     bool isHalfCurve;               //如果是半个以上的二次弧线则为yes，默认值为no
     bool isCompleteCurve;           //是圆满的圆形和椭圆形为yes
@@ -77,16 +78,17 @@
 @property (readwrite) float originalMinor;
 @property (readwrite) float startAngle;
 @property (readwrite) float endAngle;
+@property (readwrite) bool isAntiClockCurve;
 @property (readwrite) bool  isEllipse;
 @property (readwrite) bool  isHalfCurve;
 @property (readwrite) bool  isCompleteCurve;
 @property (readwrite) bool  isArcGroup;
 @property (readwrite) bool  isSplineGroup;
 @property (readwrite) bool  hasSecondJudge;
-@property (readwrite) bool isXIncrease;
-@property (readwrite) bool isXDecrease;
-@property (readwrite) bool isYIncrease;
-@property (readwrite) bool isYDecrease;
+@property (readwrite) bool  isXIncrease;
+@property (readwrite) bool  isXDecrease;
+@property (readwrite) bool  isYIncrease;
+@property (readwrite) bool  isYDecrease;
 @property (readwrite) int   curveType;
 
 @property (readwrite) float* px;
@@ -157,7 +159,7 @@
 
 //绘画
 -(void)drawWithContext:(CGContextRef)context;
--(void)drawEllipseWithContext:(CGContextRef)context;
+-(void)drawEllipseWithLastCurve:(CurveUnit*)lastCurve Context:(CGContextRef)context;
 -(void)drawEllipseArcWithContext:(CGContextRef)context;
 -(void)drawCircleArcWithContext:(CGContextRef)context;
 -(void)drawHyperbolicWithContext:(CGContextRef)context;

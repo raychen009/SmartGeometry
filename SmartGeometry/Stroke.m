@@ -90,12 +90,11 @@
 
 -(void)curvity 
 {
-    
     //一：将五个点平移，使得i点在原点
     //二：将五个点绕原点旋转[0,180)，记录五个点|y|的绝对值的和
     //三：使得绝对值和最小的角度为i点切线与x轴的夹角
     //旋转矩阵：cosA   -sinA
-    //                              sinA    cosA
+    //         sinA    cosA
     //原来坐标(x,y),旋转后(xcosA+ysinA,-xsinA+ycosA);
     //所以只需枚举[0,180)，计算所有-xsinA+ycosA的和，就是切线与x轴夹角
     //求出夹角后，求曲率：
@@ -229,7 +228,8 @@
             {
                 if(point.s<as*0.42)// 即 i 点 的 S 已 经 符 合 条 件 了
                 {
-                    point.total+=3;
+                    prePoint.total-=4;
+                    point.total+=4;
                 }
             }
             else// 若 前 一 个 点 的 d 也 符 合 条 件 ， 则 考 察 前 一 个 点 的 s
@@ -238,14 +238,14 @@
                 {
                     if(prePoint.d>point.d)
                     {
-                        prePoint.total-=3;
-                        point.total+=3;
+                        prePoint.total-=4;
+                        point.total+=4;
                     }
                 }
                 else if(point.s<as*0.42)// 前 一 个 点 的 s 不 符 合 条 件 ， 但 当 前 点 符 合 ， 则 当 前 点 加 2
                 {
-                    prePoint.total-=3;
-                    point.total+=3;
+                    prePoint.total-=4;
+                    point.total+=4;
                 }
             }
         }
@@ -273,7 +273,7 @@
                     anotherPoint = [pList objectAtIndex:j];
                     if (anotherPoint.total>=4&&abs(i-j)<=25)
                     {
-                        point.total-=2;
+                        point.total-=1;
                     }
                 }
             }
@@ -281,12 +281,13 @@
         for(int k=2;k<=25;k++)// 搞 掉 末 尾 点 附 近 点 的 冗 余
         {
             tempPoint = [pList objectAtIndex:pointNum - k];
-            tempPoint.total-=2;
+            tempPoint.total-=1;
         }
     }
 }
 
--(Gunit *)recognize:(NSMutableArray *)tempPoints {
+-(Gunit *)recognize:(NSMutableArray *)tempPoints 
+{
     // 首 先 识 别 是 否 为 点 图 元
     //if ((int)pList.size()<=2){
     //	Point_Unit apoint(pList[0]);
@@ -311,8 +312,8 @@
 
     if(tempPoints.count <= 2)
     {
-        aunit = [[PointUnit alloc]initWithPoint:[tempPoints objectAtIndex:0]];
-        
+        PointUnit* aPoint = [[PointUnit alloc]initWithPoint:[tempPoints objectAtIndex:0]];
+        return aPoint;
     }
     
     for (int i=1;i<[tempPoints count]-1;i++)
@@ -321,21 +322,29 @@
         prePoint = [tempPoints objectAtIndex:i-1];
         totalLength += [Threshold Distance:prePoint :point];
     }
-    if (tempLength/totalLength>=0.80)
+    if (tempLength/totalLength>=0.95)
     {
         Gunit* aline = [[LineUnit alloc] initWithPoints:tempPoints];
         return aline;
     }
     else
     {
-        Gunit* acurve = [[CurveUnit alloc]initWithPointArray:tempPoints ID:1];
-        //[(CurveUnit*)acurve judgeCurveWithPointArray:pList];
-        return acurve;
+        CurveUnit* acurve = [[CurveUnit alloc]initWithPointArray:tempPoints];
+        if([acurve isSecondDegreeCurveWithPointArray:tempPoints])
+        {
+            [acurve judgeCurveWithPointArray:tempPoints];
+            return acurve;
+        }
+        else
+        {
+            acurve = NULL;
+            return acurve;
+        }
     }
-    return aunit;
 }
 
--(BOOL) rebuild_line {
+-(BOOL)rebuild_line 
+{
     [gList removeAllObjects];
     NSNumber *specialPointId;
     NSNumber *nextSpecialPointId;
@@ -363,7 +372,6 @@
     else return false;
 }
 
-
 -(BOOL)rebuild_triangle 
 {
     [gList removeAllObjects];
@@ -388,7 +396,15 @@
         {
             [temp addObject:[pList objectAtIndex:j]];
         }
-        [gList addObject:[self recognize:temp]];
+        Gunit* unitTempAfterRecognize = [self recognize:temp];
+        if(unitTempAfterRecognize != NULL)
+        {
+            [gList addObject:unitTempAfterRecognize];
+        }
+        else
+        {
+            return NO;
+        }
     }
     
     int num = [gList count];
@@ -433,7 +449,8 @@
     else return false;
 }
 
--(BOOL)rebuild_rectangle {
+-(BOOL)rebuild_rectangle 
+{
     [gList removeAllObjects];
     NSNumber *specialPointId;
     NSNumber *nextSpecialPointId;
@@ -449,7 +466,15 @@
         {
             [temp addObject:[pList objectAtIndex:j]];
         }
-        [gList addObject:[self recognize:temp]];
+        Gunit* unitTempAfterRecognize = [self recognize:temp];
+        if(unitTempAfterRecognize != NULL)
+        {
+            [gList addObject:unitTempAfterRecognize];
+        }
+        else
+        {
+            return NO;
+        }
     }
     if([gList count]==4)
     {
@@ -480,5 +505,44 @@
     else return false;
 }
 
+-(BOOL)rebuild_hybridunit
+{
+    [gList removeAllObjects];
+    NSNumber *specialPointId;
+    NSNumber *nextSpecialPointId;
+    bool isHybirdUnit = YES;
+    
+    NSMutableArray* sl = specialList;
+    
+    for (int i=0;i<[specialList count]-1;i++)
+    {
+        NSMutableArray *temp = [[NSMutableArray alloc]init];//temp 为 临 时 存 放 某 个 图 元 的 所 有 点 的 数 组
+        specialPointId = [specialList objectAtIndex:i];
+        nextSpecialPointId = [specialList objectAtIndex:i+1];
+        for(int j=[specialPointId intValue];j<[nextSpecialPointId intValue];j++)
+        {
+            [temp addObject:[pList objectAtIndex:j]];
+        }
+        Gunit* unitTempAfterRecognize = [self recognize:temp];
+        if(unitTempAfterRecognize != NULL)
+        {
+            [gList addObject:unitTempAfterRecognize];
+        }
+        else
+        {
+            isHybirdUnit = NO;
+            break;
+        }
+    }
+    
+    if(isHybirdUnit)
+    {
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
 
 @end

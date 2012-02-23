@@ -14,7 +14,8 @@
 #import "LineUnit.h"
 #import "CurveUnit.h"
 
-@interface Stroke : NSObject {
+@interface Stroke : NSObject 
+{
     NSMutableArray *pList;
     NSMutableArray *gList;
     NSMutableArray *specialList;
@@ -29,6 +30,7 @@
 -(BOOL) rebuild_line;
 -(BOOL) rebuild_triangle;
 -(BOOL) rebuild_rectangle;
+-(BOOL) rebuild_hybridunit;
 
 -(void) speed;// 速 度 过 滤 方 法 ： 低 于 平 均 值 的 一 定 百 分 比 算 是 特 征 点
 -(void) curvity;// 曲 率 过 滤

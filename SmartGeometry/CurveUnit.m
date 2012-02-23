@@ -14,7 +14,8 @@
 @synthesize alpha,originalAlpha;
 @synthesize majorAxis,minorAxis,originalMajor,originalMinor;
 @synthesize startAngle,endAngle;
-@synthesize isEllipse,isCompleteCurve,isHalfCurve,isArcGroup,isSplineGroup,isXDecrease,isXIncrease,isYDecrease,isYIncrease,hasSecondJudge;
+@synthesize isAntiClockCurve,isEllipse,isCompleteCurve,isHalfCurve,isArcGroup,isSplineGroup;
+@synthesize isXDecrease,isXIncrease,isYDecrease,isYIncrease,hasSecondJudge;
 @synthesize curveType;
 @synthesize center,move,f1,f2,testE,testS,curveTrack,newDrawPointList,newSpecialPointList,arcIndexArray,arcUnitArray,artBoolArray;
 
@@ -26,6 +27,7 @@
     if (self) 
     {
         // Initialization code here.
+        isAntiClockCurve = YES;
         isArcGroup = NO;
         isSplineGroup = NO;
         isXIncrease = NO;
@@ -35,8 +37,8 @@
         
         center = [[SCPoint alloc]init];
         move   = [[SCPoint alloc]init];
-        start  = [[SCPoint alloc]init];
-        end    = [[SCPoint alloc]init];
+        self.start  = [[SCPoint alloc]init];
+        self.end    = [[SCPoint alloc]init];
         f1     = [[SCPoint alloc]init];
         f2     = [[SCPoint alloc]init];
         testS  = [[SCPoint alloc]init];
@@ -58,11 +60,11 @@
     [self initWithStartPoint:startPoint endPoint:endPoint];
     
     curveType       = 1;
-    type            = 2;
+    self.type            = 2;
     
     isHalfCurve     = NO;
     isCompleteCurve = NO;
-    isSelected      = NO;
+ //   isSelected      = NO;
     hasSecondJudge  = NO;
     
     return self;
@@ -73,7 +75,7 @@
     [self init];
     
     curveType   = 1;//椭圆或圆形类型
-    type        = 2;//二次曲线类型
+    self.type        = 2;//二次曲线类型
     
     aFactor     = a;
     bFactor     = b;
@@ -84,7 +86,7 @@
     
     isHalfCurve     = NO;
     isCompleteCurve = NO;
-    isSelected      = NO;
+    //isSelected      = NO;
     hasSecondJudge  = NO;
     
     return self;
@@ -94,19 +96,19 @@
 {
     [self init];
     
-    type = 2;       //二次曲线类型
+    self.type = 2;       //二次曲线类型
     curveType = 1;  //椭圆或圆形类型
     
     SCPoint* tempStart = [pointList objectAtIndex:0];
-    start.x = tempStart.x;
-    start.y = tempStart.y;
+    self.start.x = tempStart.x;
+    self.start.y = tempStart.y;
     
     SCPoint* tempEnd = [pointList lastObject];
-    end.x = tempEnd.x;
-    end.y = tempEnd.y;
+    self.end.x = tempEnd.x;
+    self.end.y = tempEnd.y;
     
     isHalfCurve = NO;
-    isSelected  = NO;
+    //isSelected  = NO;
     isCompleteCurve = NO;
     
     float xArray[6] = {0};
@@ -125,22 +127,22 @@
 {
     [self init];
     
-    type = 2;       //二次曲线类型
+    self.type = 2;       //二次曲线类型
     curveType = 1;  //椭圆或圆形类型
     
     SCPoint* tempPoint = [[SCPoint alloc]init];
     if(pointList.count != 0)
     {
         tempPoint = [pointList objectAtIndex:0];
-        start.x = tempPoint.x;
-        start.y = tempPoint.y;
+        self.start.x = tempPoint.x;
+        self.start.y = tempPoint.y;
         tempPoint = [pointList objectAtIndex:pointList.count-1];
-        end.x   = tempPoint.x;
-        end.y   = tempPoint.y;
+        self.end.x   = tempPoint.x;
+        self.end.y   = tempPoint.y;
         
         isHalfCurve     = NO;
         isCompleteCurve = NO;
-        isSelected      = NO;
+        //isSelected      = NO;
         hasSecondJudge  = NO;
         
         float xArray[6];
@@ -149,10 +151,10 @@
         
         curveTrack = pointList;
         
-        testS.x = start.x;
-        testS.y = start.y;
-        testE.x = end.x;
-        testE.y = end.y;
+        testS.x = self.start.x;
+        testS.y = self.start.y;
+        testE.x = self.end.x;
+        testE.y = self.end.y;
         
     }
     
@@ -173,18 +175,18 @@
         }
         if([self calculateDistanceWithPoint1:[pointList objectAtIndex:0] Point2:[pointList objectAtIndex:count-1]] < totalLength*0.1)
         {
-            end.x = start.x;
-            end.y = start.y;
+            self.end.x = self.start.x;
+            self.end.y = self.start.y;
         }
         [self setStartTOEndAntiClockWithPointArray:pointList];
     }
     else
     {
         //非二次曲线
-        type        = 3;
+        self.type        = 3;
         curveTrack  = pointList;
-        NSMutableArray* newPointList = [self findSpecialPointWithPointList:pointList];
-        [self calculateCubicSplineWithPointList:newPointList];
+//        NSMutableArray* newPointList = [self findSpecialPointWithPointList:pointList];
+        [self calculateCubicSplineWithPointList:pointList];
     }
     [self calculateStartAndEndAngle];
 }
@@ -327,10 +329,10 @@
     fFactor = aFactor*x0*x0 + bFactor*x0*y0 + cFactor*y0*y0 + dFactor*x0 + eFactor*y0 + fFactor;
     dFactor = eFactor = 0.0f;
     
-    start.x -= center.x;
-    start.y -= center.y;
-    end.x   -= center.x;
-    end.y   -= center.y;
+    self.start.x -= center.x;
+    self.start.y -= center.y;
+    self.end.x   -= center.x;
+    self.end.y   -= center.y;
     
     //旋转标准化逆时针旋转
     //  |               |
@@ -351,13 +353,13 @@
     bFactor = (tempC - tempA)*sin*cos + (tempB/2.0)*(cos*cos - sin*sin);
     cFactor = tempA*sin*sin - tempB*sin*cos + tempC*cos*cos;
     
-    SCPoint* tempPoint = [[SCPoint alloc]initWithX:start.x andY:start.y];
-    start.x = tempPoint.x*cos + tempPoint.y*sin;
-    start.y = tempPoint.x*(-sin) + tempPoint.y*cos;
-    tempPoint.x = end.x;
-    tempPoint.y = end.y;
-    end.x = tempPoint.x*cos + tempPoint.y*sin;
-    end.y = tempPoint.x*(-sin) + tempPoint.y*cos;
+    SCPoint* tempPoint = [[SCPoint alloc]initWithX:self.start.x andY:self.start.y];
+    self.start.x = tempPoint.x*cos + tempPoint.y*sin;
+    self.start.y = tempPoint.x*(-sin) + tempPoint.y*cos;
+    tempPoint.x = self.end.x;
+    tempPoint.y = self.end.y;
+    self.end.x = tempPoint.x*cos + tempPoint.y*sin;
+    self.end.y = tempPoint.x*(-sin) + tempPoint.y*cos;
     
     if(curveType == 1)//圆形或者椭圆
     {
@@ -379,12 +381,12 @@
         }
         
         //将起点和终点缩放到椭圆上
-        k = sqrtf(-fFactor / (aFactor*start.x*start.x + cFactor*start.y*start.y));
-        start.x = start.x*k;
-        start.y = start.y*k;
-        k = sqrtf(-fFactor / (aFactor*end.x*end.x + cFactor*end.y*end.y));
-        end.x = end.x*k;
-        end.y = end.y*k;
+        k = sqrtf(-fFactor / (aFactor*self.start.x*self.start.x + cFactor*self.start.y*self.start.y));
+        self.start.x = self.start.x*k;
+        self.start.y = self.start.y*k;
+        k = sqrtf(-fFactor / (aFactor*self.end.x*self.end.x + cFactor*self.end.y*self.end.y));
+        self.end.x = self.end.x*k;
+        self.end.y = self.end.y*k;
             
         majorAxis = sqrt(-fFactor/aFactor);
         minorAxis = sqrtf(-fFactor/cFactor);
@@ -396,24 +398,24 @@
             //x轴方向为虚轴,majorAxis为负
             majorAxis = -sqrtf(-fFactor/aFactor);
             minorAxis = sqrtf(fFactor/cFactor);
-            if(start.y >= 0)
+            if(self.start.y >= 0)
             {
-                start.y = sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*start.x*start.x)/
+                self.start.y = sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*self.start.x*self.start.x)/
                                 (majorAxis*majorAxis));
             }
             else
             {
-                start.y = -sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*start.x*start.x)/
+                self.start.y = -sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*self.start.x*self.start.x)/
                                  (majorAxis*majorAxis));
             }
-            if(end.y >= 0)
+            if(self.end.y >= 0)
             {
-                end.y = sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*end.x*end.x)/
+                self.end.y = sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*self.end.x*self.end.x)/
                               (majorAxis*majorAxis));
             }
             else
             {
-                end.y = -sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*end.x*end.x)/
+                self.end.y = -sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*self.end.x*self.end.x)/
                               (majorAxis*majorAxis));
             }
         }
@@ -433,35 +435,34 @@
             bFactor = (tempC-tempA)*sin*cos + (tempB/2.0)*(cos*cos-sin*sin);
             cFactor = tempA*sin*sin - tempB*sin*cos + tempC*cos*cos;
             
-            SCPoint* tempPoint = [[SCPoint alloc]initWithX:start.x andY:start.y];
-            start.x = tempPoint.x*cos + tempPoint.y*sin;
-            start.y = tempPoint.x*(-sin) + tempPoint.y*cos;
-            tempPoint.x = end.x;
-            tempPoint.y = end.y;
-            end.x = tempPoint.x*cos + tempPoint.y*sin;
-            end.y = tempPoint.x*(-sin) + tempPoint.y*cos;
+            SCPoint* tempPoint = [[SCPoint alloc]initWithX:self.start.x andY:self.start.y];
+            self.start.x = tempPoint.x*cos + tempPoint.y*sin;
+            self.start.y = tempPoint.x*(-sin) + tempPoint.y*cos;
+            tempPoint.x = self.end.x;
+            tempPoint.y = self.end.y;
+            self.end.x = tempPoint.x*cos + tempPoint.y*sin;
+            self.end.y = tempPoint.x*(-sin) + tempPoint.y*cos;
             
             [tempPoint release];
             tempPoint = NULL;
             
-            if(start.y >= 0)
+            if(self.start.y >= 0)
             {
-                start.y = sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*start.x*start.x)/
+                self.start.y = sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*self.start.x*self.start.x)/
                                 (majorAxis*majorAxis));
             }
             else
             {
-                start.y = -sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*start.x*start.x)/
-                                 (majorAxis*majorAxis));
+                self.start.y = -sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*self.start.x*self.start.x)/(majorAxis*majorAxis));
             }
-            if(end.y >= 0)
+            if(self.end.y >= 0)
             {
-                end.y = sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*end.x*end.x)/
+                self.end.y = sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*self.end.x*self.end.x)/
                               (majorAxis*majorAxis));
             }
             else
             {
-                end.y = -sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*end.x*end.x)/
+                self.end.y = -sqrtf((majorAxis*majorAxis*minorAxis*minorAxis + minorAxis*minorAxis*self.end.x*self.end.x)/
                                (majorAxis*majorAxis));
             }
             
@@ -513,18 +514,20 @@
             countForAnti++;
         }
     }
-        if(countForNoAnti > countForAnti)
-        {
-            SCPoint* tempPoint = [[SCPoint alloc]initWithX:start.x andY:start.y];
-            start.x = end.x;
-            start.y = end.y;
-            
-            end.x = tempPoint.x;
-            end.y = tempPoint.y;
-        }
+    if(countForNoAnti > countForAnti)
+    {
+        SCPoint* tempPoint = [[SCPoint alloc]initWithX:self.start.x andY:self.start.y];
+        self.start.x = self.end.x;
+        self.start.y = self.end.y;
         
-        if(![self hasSecondJudge])
-            [self secondJudgeIsCompleteCurveWithPointArray:pointList];
+        self.end.x = tempPoint.x;
+        self.end.y = tempPoint.y;
+        
+        isAntiClockCurve = NO;
+    }
+    
+    if(![self hasSecondJudge])
+        [self secondJudgeIsCompleteCurveWithPointArray:pointList];
     
 }
 
@@ -535,6 +538,10 @@
     isXDecrease = NO;
     isYIncrease = NO;
     isYDecrease = NO;
+    [arcUnitArray removeAllObjects];
+    [arcBoolArray removeAllObjects];
+    [arcIndexArray removeAllObjects];
+    
     
     NSMutableArray* pointList = [[NSMutableArray alloc]init];
     
@@ -661,11 +668,14 @@
             SCPoint* currentPoint = [pointList objectAtIndex:i];
             SCPoint* nextPoint = [pointList objectAtIndex:i+1];
             
-            if((currentPoint.y < lastPoint.y && currentPoint.y < nextPoint.y) || (currentPoint.y > lastPoint.y && currentPoint.y > nextPoint.y))
+            if(!isArcGroup)
             {
-                [newSpecialPointList addObject:currentPoint];
-                [arcIndexArray addObject:[[NSNumber alloc]initWithInt:i]];
-                [arcBoolArray addObject:[[NSNumber alloc]initWithBool:NO]];
+                if((currentPoint.y < lastPoint.y && currentPoint.y < nextPoint.y) || (currentPoint.y > lastPoint.y && currentPoint.y > nextPoint.y))
+                {
+                    [newSpecialPointList addObject:currentPoint];
+                    [arcIndexArray addObject:[[NSNumber alloc]initWithInt:i]];
+                    [arcBoolArray addObject:[[NSNumber alloc]initWithBool:NO]];
+                }
             }
             
             if((currentPoint.x < lastPoint.x && currentPoint.x < nextPoint.x) || (currentPoint.x > lastPoint.x && currentPoint.x > nextPoint.x))
@@ -891,7 +901,7 @@
 
 -(void)calculateCubicSplineWithPointList:(NSMutableArray *)pointList
 {    
-    NSMutableArray* newPointList = pointList;
+    NSMutableArray* newPointList = [self findSpecialPointWithPointList:pointList];
     
     if(isXDecrease || isXIncrease)
     {
@@ -921,57 +931,57 @@
     {
         NSMutableArray* tempPointList = [[NSMutableArray alloc]init];
         arcUnitArray = [[NSMutableArray alloc]init];
-   
-//     //分解圆弧
-//     for(int i=1; i<[arcIndexArray count]; i++)
-//     {
-//         NSNumber* tempBoolNumber = [arcBoolArray objectAtIndex:i-1];
-//         bool tempBool = [tempBoolNumber boolValue];
-//         
-//         isArcGroup = YES;
-//         [tempPointList removeAllObjects];
-//         
-//         NSNumber* lastNumber = [arcIndexArray objectAtIndex:i-1];
-//         int lastIndex = [lastNumber intValue];
-//         
-//         NSNumber* currentNumber = [arcIndexArray objectAtIndex:i];
-//         int currentIndex = [currentNumber intValue];
-//         
-//         for(int j=lastIndex; j<=currentIndex; j++)
-//         {
-//             [tempPointList addObject:[newPointList objectAtIndex:j]];
-//         }
-//         
-//         CurveUnit* tempCurveUnit = [[CurveUnit alloc]init];
-//         
-//         if(i == 1)
-//         {
-//             tempCurveUnit = [self produceArcUnitWithPointList:tempPointList LastCenter:NULL];
-//         }
-//         else
-//         {
-//             CurveUnit* lastCurveUnit = [arcUnitArray lastObject];
-//             tempCurveUnit = [self produceArcUnitWithPointList:tempPointList LastCenter:lastCurveUnit.center];
-//         }
-//         
-//         if(tempCurveUnit != NULL)
-//         {
-//             [arcUnitArray addObject:tempCurveUnit];
-//         }
-//         else
-//         {
-//             isArcGroup = NO;
-//             break;
-//         }
-//     }
-//     // test
-//     if(isArcGroup)
-//         return;
-   
-   //分解插值
-   for(int i=1; i<[arcIndexArray count]; i++)
+        
+        isArcGroup = YES;
+        newPointList = [self findSpecialPointWithPointList:pointList];
+        //分解圆弧
+        for(int i=1; i<[arcIndexArray count]; i++)
         {
-            isSplineGroup = YES;
+            [tempPointList removeAllObjects];
+            
+            NSNumber* lastNumber = [arcIndexArray objectAtIndex:i-1];
+            int lastIndex = [lastNumber intValue];
+            
+            NSNumber* currentNumber = [arcIndexArray objectAtIndex:i];
+            int currentIndex = [currentNumber intValue];
+            
+            for(int j=lastIndex; j<=currentIndex; j++)
+            {
+                [tempPointList addObject:[newPointList objectAtIndex:j]];
+            }
+            
+            CurveUnit* tempCurveUnit = [[CurveUnit alloc]init];
+            
+            if(i == 1)
+            {
+                tempCurveUnit = [self produceArcUnitWithPointList:tempPointList LastCenter:NULL];
+            }
+            else
+            {
+                CurveUnit* lastCurveUnit = [arcUnitArray lastObject];
+                tempCurveUnit = [self produceArcUnitWithPointList:tempPointList LastCenter:lastCurveUnit.center];
+            }
+            
+            if(tempCurveUnit != NULL)
+            {
+                [arcUnitArray addObject:tempCurveUnit];
+            }
+            else
+            {
+                isArcGroup = NO;
+                [arcUnitArray removeAllObjects];
+                break;
+            }
+        }
+        
+        if(isArcGroup)
+            return;
+        
+        isSplineGroup = YES;
+        newPointList = [self findSpecialPointWithPointList:pointList];
+        //分解插值
+        for(int i=1; i<[arcIndexArray count]; i++)
+        {
             [tempPointList removeAllObjects];
             
             NSNumber* lastNumber = [arcIndexArray objectAtIndex:i-1];
@@ -1023,10 +1033,10 @@
     // x = -d/(2a) - by/(2a)
     // d = f - (ax^2+bxy+cy^2)
     // Q(x,y) = a(x-x0)^2+b(x-x0)(y-y0)+c(y-y0)^2 + d;
-//    if(bFactor*bFactor - 4*aFactor*cFactor <= equal_to_zero && bFactor*bFactor - 4*aFactor*cFactor >= equal_to_zero)
-//    {
-//        curveType = 3;
-//    }
+    //if(bFactor*bFactor - 4*aFactor*cFactor <= equal_to_zero && bFactor*bFactor - 4*aFactor*cFactor >= equal_to_zero)
+    //{
+    //    curveType = 3;
+    //}
     if(bFactor*bFactor > 4*aFactor*cFactor)
     {
         if (curveType!= 5)
@@ -1069,19 +1079,19 @@
 
 -(void)calculateStartPointAndEndPoint
 {
-    start.x = (majorAxis*cosf(startAngle));
-    start.y = (minorAxis*sinf(startAngle));
-    end.x   = (majorAxis*cosf(endAngle));
-    end.y   = (minorAxis*sinf(endAngle));
+    self.start.x = (majorAxis*cosf(startAngle));
+    self.start.y = (minorAxis*sinf(startAngle));
+    self.end.x   = (majorAxis*cosf(endAngle));
+    self.end.y   = (minorAxis*sinf(endAngle));
 }
 
 -(void)calculateStartAndEndAngle
 {
     //计算起始角和终止角
-    if(start.x == 0)
+    if(self.start.x == 0)
     {
         //计算起始角
-        if(start.y > 0)
+        if(self.start.y > 0)
         {
             startAngle = PI/2;
         }
@@ -1092,29 +1102,29 @@
     }
     else
     {
-        startAngle = atanf((start.y*majorAxis)/(start.x*minorAxis));
-        if(start.x<0)//角在二、三象限
+        startAngle = atanf((self.start.y*majorAxis)/(self.start.x*minorAxis));
+        if(self.start.x<0)//角在二、三象限
         {
             startAngle += PI;
         }
     }
-    if(start.x == end.x && start.y == end.y)
+    if(self.start.x == self.end.x && self.start.y == self.end.y)
     {
         isCompleteCurve = YES;
         endAngle = startAngle + 2*PI;
         return;
     }
-    if(end.x == 0)
+    if(self.end.x == 0)
     {
-        if(end.y > 0)
+        if(self.end.y > 0)
             endAngle = PI/2;
-        if(end.y < 0)
+        if(self.end.y < 0)
             endAngle = PI*3/2;
     }
     else
     {
-        endAngle = atanf((end.y*majorAxis)/(end.x*minorAxis));
-        if(end.x < 0)//角在二、三象限
+        endAngle = atanf((self.end.y*majorAxis)/(self.end.x*minorAxis));
+        if(self.end.x < 0)//角在二、三象限
             endAngle += PI;
     }
     
@@ -1142,12 +1152,12 @@
 -(void)calculateStartAndEndAngleWithStartAngle:(float)startAngleLocal EndAngle:(float)endAngleLocal
 {
     SCPoint* tempStart = [[SCPoint alloc]initWithX:0 andY:0];
-    tempStart.x = end.x;
-    tempStart.y = end.y;
+    tempStart.x = self.end.x;
+    tempStart.y = self.end.y;
     
     SCPoint* tempEnd = [[SCPoint alloc]initWithX:0 andY:0];
-    tempEnd.x = start.x;
-    tempEnd.y = start.y;
+    tempEnd.x = self.start.x;
+    tempEnd.y = self.start.y;
     
     //计算起始角
     if(tempStart.x == 0)
@@ -1338,7 +1348,7 @@
     
     bool isSecondDegreeCurve = [curveUnitTemp isSecondDegreeCurveWithPointArray:pointList];
     
-    if(isSecondDegreeCurve)
+    if(isSecondDegreeCurve && curveUnitTemp.curveType == 1)
     {
         [curveUnitTemp judgeCurveWithPointArray:pointList];
         return curveUnitTemp;
@@ -1394,7 +1404,7 @@
     if(count > 5)
     {
         isCompleteCurve = YES;
-        end = start;
+        self.end = self.start;
     }
     hasSecondJudge = YES;
     
@@ -1432,7 +1442,7 @@
     endAngle = startAngle+2*PI;
 }
 
--(void)drawEllipseWithContext:(CGContextRef)context
+-(void)drawEllipseWithLastCurve:(CurveUnit*)lastCurve Context:(CGContextRef)context
 {
     int leftFocusX=0,leftFocusY=0;          //左焦点
     int rightFocusX=0,rightFocusY=0;        //右焦点
@@ -1461,26 +1471,18 @@
     CGContextSetLineWidth(context, 5.0f);
     
     CGContextSaveGState(context);
-    CGContextTranslateCTM(context, move.x, move.y);
-    CGContextRotateCTM(context, alpha);
     
     if(isCompleteCurve)
     {
+        CGContextTranslateCTM(context, move.x, move.y);
+        CGContextRotateCTM(context, alpha);
         CGContextStrokeEllipseInRect(context, CGRectMake(-majorAxis, -minorAxis, 2*majorAxis, 2*minorAxis));
     }
     else
     {
+        CGContextTranslateCTM(context, move.x, move.y);
+        CGContextRotateCTM(context, alpha);
         [self drawEllipseArcWithContext:context];
-//        //画弧和画椭圆分开
-//        if(majorAxis == minorAxis)
-//        {
-//            CGContextAddArc(context, 0, 0, (majorAxis+minorAxis)/2, startAngle, endAngle, 0);
-//            CGContextStrokePath(context);
-//        }
-//        else
-//        {
-//            [self drawEllipseArcWithContext:context];
-//        }
     }
     
     if(isCompleteCurve)
@@ -1523,15 +1525,15 @@
     float b = fabsf(minorAxis);
     float c = sqrtf(a*a+b*b);
     //计算出起始角度和终止角度
-    startAngle = atanf(start.y/b);
-    endAngle   = atanf(end.y/b);
+    startAngle = atanf(self.start.y/b);
+    endAngle   = atanf(self.end.y/b);
     if(minorAxis < 0)
     {
-        if(start.x < 0)
+        if(self.start.x < 0)
         {
             startAngle = PI - startAngle;
         }
-        if(end.x < 0)
+        if(self.end.x < 0)
         {
             endAngle = PI - endAngle;
         }
@@ -1542,11 +1544,11 @@
     }
     else if(majorAxis < 0)
     {
-        if(start.x < 0)
+        if(self.start.x < 0)
         {
             startAngle = PI - startAngle;
         }
-        if(end.x < 0)
+        if(self.end.x < 0)
         {
             endAngle = PI - endAngle;
         }
@@ -1612,14 +1614,30 @@
 //        CGContextSetStrokeColorWithColor(context, [UIColor blackColor].CGColor);
         
     }
-    else if(isSplineGroup || isArcGroup)
+    else if(isArcGroup)
+    {
+        for(int i=0; i<[arcUnitArray count]; i++)
+        {
+            if(i == 0)
+            {
+                CurveUnit* curveUnitTemp = [arcUnitArray objectAtIndex:i];
+                [curveUnitTemp drawEllipseWithLastCurve:NULL Context:context];
+            }
+            else
+            {
+                CurveUnit* lastCurveUnit = [arcUnitArray objectAtIndex:i-1];
+                CurveUnit* curveUnitTemp = [arcUnitArray objectAtIndex:i];
+                [curveUnitTemp drawEllipseWithLastCurve:lastCurveUnit Context:context];
+            }
+        } 
+    }
+    else if(isSplineGroup)
     {
         for(int i=0; i<[arcUnitArray count]; i++)
         {
             CurveUnit* curveUnitTemp = [arcUnitArray objectAtIndex:i];
-            
             [curveUnitTemp drawWithContext:context];
-        } 
+        }   
     }
 }
 
@@ -1715,30 +1733,26 @@
 {
     if(majorAxis<0 && minorAxis<0)
     {
-        type = 3;           //非二次曲线
+        self.type = 3;           //非二次曲线
         curveType = 3;      //非二次曲线
     }
     
-    if(type==2 && curveType==2)
+    if(self.type==2 && curveType==2)
     {
         //双曲线
         [self drawHyperbolicWithContext:context];
         NSLog(@"双曲线啊！！！！");
     }
-    else if(type == 2 && curveType == 1)
+    else if(self.type == 2 && curveType == 1)
     {
-        [self drawEllipseWithContext:context];
+        //椭圆
+        [self drawEllipseWithLastCurve:NULL Context:context];
         NSLog(@"椭圆啊！！！！");
-    }
-    else if(type == 2 && curveType == 3)
-    {
-        [self drawCircleArcWithContext:context];
-        NSLog(@"弧线啊！！！");
-    }
-    else if(type == 3)
+    }    
+    else if(self.type == 3)
     {
         [self drawCubicSplineWithPointList:newDrawPointList Context:context];
-        //[self drawBezierWithPointList:curveTrack Context:context];
+//        [self drawBezierWithPointList:curveTrack Context:context];
     }
     
 }

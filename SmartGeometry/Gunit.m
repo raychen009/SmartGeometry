@@ -24,6 +24,7 @@
         start.y = 0;
         end.x = 0;
         end.y = 0;
+        type  = 0;
     }
     
     return self;

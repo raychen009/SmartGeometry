@@ -33,38 +33,60 @@ int graph_id = 0;
     
     SCGraph *graph = NULL;
     //进行第一次拟合 返回拟合结果，可能是空指针（暨无法一次拟合成功的情况）
-    CurveUnit* cu;
     Gunit* unit = [self first_units_recognize:newPointList];
-    cu = (CurveUnit*)unit;
-    graph = [self bind_unit_to_graphs:unit :unitList];
-    
+    if(unit.type != 3 && unit != NULL)
+    {
+        graph = [self bind_unit_to_graphs:unit :unitList];
+    }
     //进行第二次拟合
     if(graph==NULL) 
     {
-        Stroke *stroke = [[Stroke alloc]initWithPoints: newPointList];
+        Stroke *stroke = [[Stroke alloc]initWithPoints:newPointList];
         [stroke findSpecialPoints];
         
-        BOOL is_triangle = [stroke rebuild_triangle];
-        if(is_triangle)//先进行三角形识别
-            graph = [self create_Triangle_Graph:stroke :unitList :pointGraphList];
-        else
+        if([stroke.specialList count] > 2)
         {
-            bool is_retangle = [stroke rebuild_rectangle];  //判断能否生成四边形
-            if(is_retangle) 
+            BOOL is_triangle = [stroke rebuild_triangle];
+            if(is_triangle)//先进行三角形识别
             {
-                graph = [self create_Rectangle_Graph:stroke :unitList :pointGraphList]; //生成四边形
+                graph = [self create_Triangle_Graph:stroke :unitList :pointGraphList];
             }
             else
             {
-                //第二次识别中，非四边形或三角形，切割成小的图元生成图形
-                for(int i=0; i<stroke.gList.count; i++)
+                bool is_retangle = [stroke rebuild_rectangle];  //判断能否生成四边形
+                if(is_retangle) 
                 {
-                    Gunit* tempUnitFromList = [stroke.gList objectAtIndex:i];
-                    SCGraph* tempGraph = [self bind_unit_to_graphs:tempUnitFromList :unitList];
-                    [self push_back_new_graph:tempGraph :graphList :pointGraphList];
+                    graph = [self create_Rectangle_Graph:stroke :unitList :pointGraphList]; //生成四边形
                 }
-                return;
+                else
+                {
+                    //第二次识别中，非四边形或三角形，切割成小的图元生成图形
+                    BOOL is_hybridunit = [stroke rebuild_hybridunit];
+                    
+                    if(is_hybridunit)
+                    {
+                        for(int i=0; i<stroke.gList.count; i++)
+                        {
+                            Gunit* tempUnitFromList = [stroke.gList objectAtIndex:i];
+                            SCGraph* tempGraph = [self bind_unit_to_graphs:tempUnitFromList :unitList];
+                            [self push_back_new_graph:tempGraph :graphList :pointGraphList];
+                        }
+                    }
+                    else
+                    {
+                        CurveUnit* tempCurveUnit = [[CurveUnit alloc]initWithPointArray:pList ID:1];
+                        SCGraph* tempCurveGraph = [self bind_unit_to_graphs:tempCurveUnit :unitList];
+                        [self push_back_new_graph:tempCurveGraph :graphList :pointGraphList];
+                    }
+                    return;
+                }
             }
+        }
+        else
+        {
+            CurveUnit* tempCurveUnit = [[CurveUnit alloc]initWithPointArray:pList ID:1];
+            SCGraph* tempCurveGraph = [self bind_unit_to_graphs:tempCurveUnit :unitList];
+            [self push_back_new_graph:tempCurveGraph :graphList :pointGraphList];
         }
         
     }
@@ -85,48 +107,45 @@ int graph_id = 0;
        &&  [Threshold Distance:s :e]<12)
     {
         unit=[[PointUnit alloc] initWithPoints:pList];
+        return unit;
     }
     else
     {
         LineUnit* line = [[LineUnit alloc] initWithPoints:pList];
         if([line judge:pList])
+        {
             unit=line;
+            return unit;
+        }
         else
         {
-            [line release];
-            line=NULL;
-            unit = NULL;
-        }
-        CurveUnit* curve = [[CurveUnit alloc] initWithPointArray:pList];
-        if([curve isSecondDegreeCurveWithPointArray:pList])
-        {
-            NSMutableArray* tempPointList = pList;
-            Stroke* stroke = [[Stroke alloc]initWithPoints:tempPointList];
-            [stroke findSpecialPoints];
-            bool isTriangle = [stroke rebuild_triangle];
-            if(!isTriangle)
+            CurveUnit* curve = [[CurveUnit alloc] initWithPointArray:pList];
+            if([curve isSecondDegreeCurveWithPointArray:pList])
             {
-                Gunit* tempUnit = [stroke recognize:pList];
-                if([tempUnit isKindOfClass:[LineUnit class]])
+                NSMutableArray* tempPointList = pList;
+                Stroke* stroke = [[Stroke alloc]initWithPoints:tempPointList];
+                [stroke findSpecialPoints];
+                bool isTriangle = [stroke rebuild_triangle];
+                bool isRectangle = [stroke rebuild_rectangle];
+                if(!isTriangle && !isRectangle)
                 {
-                    unit = tempUnit;
+                    [curve judgeCurveWithPointArray:pList];
+                    return curve;
                 }
                 else
                 {
-                    [tempUnit release];
-                    tempUnit = NULL;
-                    [curve judgeCurveWithPointArray:pList];
-                    unit = curve;
+                    unit = NULL;
+                    return unit;
                 }
             }
-        }
-        else
-        {
-            [curve judgeCurveWithPointArray:pList];
-            unit = curve;
+            else
+            {
+                unit = NULL;
+                return unit;
+            }
         }
     }
-    return unit;
+    
 }
 
 -(SCGraph *)bind_unit_to_graphs:(Gunit *)unit :(NSMutableArray *)unitList {
