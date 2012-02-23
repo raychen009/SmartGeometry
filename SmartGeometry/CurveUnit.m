@@ -533,7 +533,7 @@
     
 }
 
--(NSMutableArray*)calculateNewDrawSecCurveTrack
+-(void)calculateNewDrawSecCurveTrack
 {
     if(self.type == 2 && curveType == 1)
     {
@@ -578,6 +578,46 @@
             y = b*sinf(i);
             [self translateAndRotationWithX:&x Y:&y Theta:alpha Point:[[SCPoint alloc]initWithX:move.x andY:move.y]];
             [newDrawSecCurveTrack addObject:[[SCPoint alloc]initWithX:x andY:y]];
+        }
+    }
+}
+
+-(void)makeCurveSmoothToLastCurve:(CurveUnit *)lastCurve
+{
+    if(lastCurve != NULL)
+    {
+        SCPoint* aimPoint    = [[SCPoint alloc]init];
+        SCPoint* originPoint = [[SCPoint alloc]init];
+        SCPoint* lastStart   = [lastCurve.newDrawSecCurveTrack objectAtIndex:0];
+        SCPoint* lastEnd     = [lastCurve.newDrawSecCurveTrack lastObject];
+        SCPoint* nowStart    = [newDrawSecCurveTrack objectAtIndex:0];
+        SCPoint* nowEnd      = [newDrawSecCurveTrack lastObject];
+        if(lastCurve.isAntiClockCurve)  //上条曲线是顺时针
+        {
+            aimPoint.x = lastEnd.x;
+            aimPoint.y = lastEnd.y;
+        }
+        else
+        {
+            aimPoint.x = lastStart.x;
+            aimPoint.y = lastStart.y;
+        }
+        if(isAntiClockCurve)
+        {
+            originPoint.x = nowStart.x;
+            originPoint.y = nowStart.y;
+        }
+        else
+        {
+            originPoint.x = nowEnd.x;
+            originPoint.y = nowEnd.y;
+        }
+        
+        SCPoint* vector = [[SCPoint alloc]initWithX:aimPoint.x-originPoint.x andY:aimPoint.y-originPoint.y];
+        for(int i=0; i<[newDrawSecCurveTrack count]; i++)
+        {
+            SCPoint* tempPoint = [newDrawSecCurveTrack objectAtIndex:i];
+            tempPoint = [self translateAndRotationWithPoint:tempPoint Theta:0 Point:vector];
         }
     }
 }
@@ -1469,8 +1509,17 @@
     temp.x = *x;
     temp.y = *y;
     //旋转平移变换
-    *x = (int)(temp.x*cos + temp.y*sin) + vector.x;
-    *y = (int)(temp.x*(-sin) + temp.y*cos) + vector.y;
+    *x = (temp.x*cos + temp.y*sin) + vector.x;
+    *y = (temp.x*(-sin) + temp.y*cos) + vector.y;
+}
+
+-(SCPoint*)translateAndRotationWithPoint:(SCPoint *)tempPoint Theta:(float)theta Point:(SCPoint *)vector
+{
+    float cos = cosf(-theta);
+    float sin = sinf(-theta);
+    tempPoint.x = (tempPoint.x*cos + tempPoint.y*sin) + vector.x;
+    tempPoint.y = (tempPoint.y*(-sin) + tempPoint.y*cos) + vector.y;
+    return tempPoint;
 }
 
 -(void)setCenterWithX:(float)x Y:(float)y
@@ -1495,29 +1544,6 @@
 
 -(void)drawEllipseWithLastCurve:(CurveUnit*)lastCurve Context:(CGContextRef)context
 {
-    int leftFocusX=0,leftFocusY=0;          //左焦点
-    int rightFocusX=0,rightFocusY=0;        //右焦点
-    int centerX=0,centerY=0;                //圆心
-    bool ellipseBool = YES;                 //默认是椭圆
-    float focusLength = sqrtf(abs(majorAxis*majorAxis - minorAxis*minorAxis));
-    if(majorAxis > minorAxis)
-    {
-        leftFocusX  = (int)focusLength;
-        rightFocusX = -(int)focusLength;
-    }
-    else if(minorAxis == majorAxis)
-    {
-        ellipseBool = NO;
-    }
-    else if(majorAxis < minorAxis)
-    {
-        leftFocusY  = (int)focusLength;
-        rightFocusY = -(int)focusLength;
-    }
-    
-    float startAngleLocal,endAngleLocal;
-    [self calculateStartAndEndAngleWithStartAngle:startAngleLocal EndAngle:endAngleLocal];
-    
     CGContextSetRGBFillColor(context, 0.0, 0.0, 1.0, 1.0);
     CGContextSetLineWidth(context, 5.0f);
     
@@ -1531,11 +1557,8 @@
     }
     else
     {
-//        CGContextTranslateCTM(context, move.x, move.y);
-//        CGContextRotateCTM(context, alpha);
-//        [self drawEllipseArcWithContext:context];
-        CGMutablePathRef path = CGPathCreateMutable();
         SCPoint* pointTempAt0 = [newDrawSecCurveTrack objectAtIndex:0];
+        CGMutablePathRef path = CGPathCreateMutable();
         CGPathMoveToPoint(path, NULL, pointTempAt0.x, pointTempAt0.y);
         
         for(float i=1; i<[newDrawSecCurveTrack count]; i++)
@@ -1548,6 +1571,11 @@
         CGContextAddPath(context, path);
         CGContextStrokePath(context);
         CGPathRelease(path);
+        
+        //画弧线，为把处理和绘画分开
+//        CGContextTranslateCTM(context, move.x, move.y);
+//        CGContextRotateCTM(context, alpha);
+//        [self drawEllipseArcWithContext:context];
     }
     
     if(isCompleteCurve)
@@ -1695,6 +1723,7 @@
             {
                 CurveUnit* lastCurveUnit = [arcUnitArray objectAtIndex:i-1];
                 CurveUnit* curveUnitTemp = [arcUnitArray objectAtIndex:i];
+                [curveUnitTemp makeCurveSmoothToLastCurve:lastCurveUnit];
                 [curveUnitTemp drawEllipseWithLastCurve:lastCurveUnit Context:context];
             }
         } 

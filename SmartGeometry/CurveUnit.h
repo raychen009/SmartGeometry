@@ -126,7 +126,8 @@
 
 
 //计算画新椭圆曲线的轨迹
--(NSMutableArray*)calculateNewDrawSecCurveTrack;
+-(void)calculateNewDrawSecCurveTrack;
+-(void)makeCurveSmoothToLastCurve:(CurveUnit*)lastCurve;
 
 //圆弧分解计算相关函数
 -(float)calculateSlopeWithPoint1:(SCPoint*)point1 Point2:(SCPoint*)point2;
@@ -185,5 +186,6 @@
 
 //旋转平移操作
 -(void)translateAndRotationWithX:(float*)x Y:(float*)y Theta:(float)theta Point:(SCPoint*)vector;
+-(SCPoint*)translateAndRotationWithPoint:(SCPoint*)tempPoint Theta:(float)theta Point:(SCPoint*)vector;
 
 @end
