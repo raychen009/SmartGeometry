@@ -586,6 +586,38 @@
 {
     if(lastCurve != NULL)
     {
+        //旋转部分先不实现
+//        float aimAngle;
+//        float originAngle;
+//        float lastStartAngle = lastCurve.startAngle;
+//        float lastEndAngle   = lastCurve.endAngle;
+//        float nowStartAngle  = self.startAngle;
+//        float nowEndAngle    = self.endAngle;
+//        
+//        if(lastCurve.isAntiClockCurve)  //上条曲线是顺时针
+//        {
+//            aimAngle = lastEndAngle;
+//        }
+//        else
+//        {
+//            aimAngle = lastStartAngle;
+//        }
+//        if(isAntiClockCurve)    //这条曲线是顺时针
+//        {
+//            originAngle = nowStartAngle;
+//        }
+//        else
+//        {
+//            originAngle = nowEndAngle;
+//        }
+//        float rotateAngle = (aimAngle+lastCurve.alpha) - (originAngle+alpha);
+//        for(int i=0; i<[newDrawSecCurveTrack count]; i++)
+//        {
+//            SCPoint* tempPoint = [newDrawSecCurveTrack objectAtIndex:i];
+//            [self rotationWithPoint:tempPoint Theta:rotateAngle];
+//        }
+        
+        
         SCPoint* aimPoint    = [[SCPoint alloc]init];
         SCPoint* originPoint = [[SCPoint alloc]init];
         SCPoint* lastStart   = [lastCurve.newDrawSecCurveTrack objectAtIndex:0];
@@ -593,47 +625,33 @@
         SCPoint* nowStart    = [newDrawSecCurveTrack objectAtIndex:0];
         SCPoint* nowEnd      = [newDrawSecCurveTrack lastObject];
         
-        float aimAngle;
-        float originAngle;
-        float lastStartAngle = lastCurve.startAngle;
-        float lastEndAngle   = lastCurve.endAngle;
-        float nowStartAngle  = self.startAngle;
-        float nowEndAngle    = self.endAngle;
-        
         if(lastCurve.isAntiClockCurve)  //上条曲线是顺时针
         {
             aimPoint.x = lastEnd.x;
             aimPoint.y = lastEnd.y;
-            aimAngle = lastEndAngle;
         }
         else
         {
             aimPoint.x = lastStart.x;
             aimPoint.y = lastStart.y;
-            aimAngle = lastStartAngle;
         }
         if(isAntiClockCurve)    //这条曲线是顺时针
         {
             originPoint.x = nowStart.x;
             originPoint.y = nowStart.y;
-            originAngle = nowStartAngle;
         }
         else
         {
             originPoint.x = nowEnd.x;
             originPoint.y = nowEnd.y;
-            originAngle = nowEndAngle;
         }
-        
-        float rotateAngle = (aimAngle+lastCurve.alpha) - (originAngle+alpha);
         SCPoint* vector = [[SCPoint alloc]initWithX:aimPoint.x-originPoint.x andY:aimPoint.y-originPoint.y];
-        
         [self translateAndRotationWithPoint:center Theta:0 Point:vector];
         [self setMove:center];
         for(int i=0; i<[newDrawSecCurveTrack count]; i++)
         {
             SCPoint* tempPoint = [newDrawSecCurveTrack objectAtIndex:i];
-            tempPoint = [self translateAndRotationWithPoint:tempPoint Theta:-rotateAngle Point:vector];
+            tempPoint = [self translateWithPoint:tempPoint Vector:vector];
         }
     }
 }
@@ -1535,6 +1553,22 @@
     float sin = sinf(theta);
     tempPoint.x = ((tempPoint.x-center.x)*cos + (tempPoint.y-center.y)*sin) + center.x + vector.x;
     tempPoint.y = ((tempPoint.x-center.x)*(-sin) + (tempPoint.y-center.y)*cos) + center.y + vector.y;
+    return tempPoint;
+}
+
+-(SCPoint*)rotationWithPoint:(SCPoint *)tempPoint Theta:(float)theta
+{
+    float cos = cosf(theta);
+    float sin = sinf(theta);
+    tempPoint.x = ((tempPoint.x-center.x)*cos + (tempPoint.y-center.y)*sin) + center.x;
+    tempPoint.y = ((tempPoint.x-center.x)*(-sin) + (tempPoint.y-center.y)*cos) + center.y;
+    return tempPoint;    
+}
+
+-(SCPoint*)translateWithPoint:(SCPoint *)tempPoint Vector:(SCPoint *)vector
+{
+    tempPoint.x = tempPoint.x + vector.x;
+    tempPoint.y = tempPoint.y + vector.y;
     return tempPoint;
 }
 

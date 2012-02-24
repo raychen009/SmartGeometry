@@ -187,5 +187,7 @@
 //旋转平移操作
 -(void)translateAndRotationWithX:(float*)x Y:(float*)y Theta:(float)theta Point:(SCPoint*)vector;
 -(SCPoint*)translateAndRotationWithPoint:(SCPoint*)tempPoint Theta:(float)theta Point:(SCPoint*)vector;
+-(SCPoint*)rotationWithPoint:(SCPoint*)tempPoint Theta:(float)theta;
+-(SCPoint*)translateWithPoint:(SCPoint*)tempPoint Vector:(SCPoint*)vector;
 
 @end
