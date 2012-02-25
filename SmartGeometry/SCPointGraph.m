@@ -20,8 +20,11 @@
 - (id)init
 {
     self = [super init];
-    if (self) {
+    if (self) 
+    {
         // Initialization code here.
+        self.graphType = Point_Graph;
+        pointUnit = [[PointUnit alloc]init];
     }
     
     return self;
@@ -29,6 +32,8 @@
 
 -(id)initWithUnit:(PointUnit*)pointUnit andId:(int)temp_local_graph_id
 {
+    [self init];
+    
     self.pointUnit = pointUnit;
     freedomType    = 0;
     belong_to_triangle  = NO;
@@ -36,8 +41,7 @@
     is_on_line = NO;
     is_on_circle = NO;
     in_graph_list = NO;
-    
-    [self init];
+
     return self;
 }
 

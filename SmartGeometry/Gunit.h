@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SCPoint.h"
+
 @protocol GunitInterface <NSObject>
     
 @end
@@ -64,6 +65,7 @@ typedef enum
 @property (retain,nonatomic) SCPoint *start;
 @property (retain,nonatomic) SCPoint *end;
 @property (readwrite)        int     type;
+@property (readwrite)        bool    isSelected;
 
 -(id) initWithStartPoint:(SCPoint*) s endPoint:(SCPoint*) e;
 -(id) initWithPoints:(NSMutableArray*) points;

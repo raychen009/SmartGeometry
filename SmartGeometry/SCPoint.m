@@ -12,9 +12,11 @@
 
 @synthesize s,d,c,x,y,originalX,originalY,total;
 
--(id)init{
+-(id)init
+{
     self = [super init];
-    if (self) {
+    if (self) 
+    {
         x = 0;
         y = 0;
         total = 0;

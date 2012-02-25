@@ -23,6 +23,7 @@
     
     NSMutableArray* constraintList;
     
+    bool isSelected;
     bool isDraw;
 }
 
@@ -30,6 +31,7 @@
 @property (readwrite) int               local_graph_id;
 @property (readwrite) GraphType         graphType;
 @property (readwrite) bool              isDraw;
+@property (readwrite) bool              isSelected;
 
 -(id)initWithId:(int)temp_local_graph_id;
 -(id)initWithId:(int)temp_local_graph_id andType:(GraphType)graphType1;

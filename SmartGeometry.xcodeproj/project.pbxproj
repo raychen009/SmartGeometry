@@ -44,6 +44,7 @@
 		A3ABA6F61493832B0071D53D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A3ABA6F41493832B0071D53D /* InfoPlist.strings */; };
 		A3ABA6F81493832B0071D53D /* SmartGeometryTests.h in Resources */ = {isa = PBXBuildFile; fileRef = A3ABA6F71493832B0071D53D /* SmartGeometryTests.h */; };
 		A3ABA6FA1493832B0071D53D /* SmartGeometryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A3ABA6F91493832B0071D53D /* SmartGeometryTests.m */; };
+		A3CE97EF14F8B7B0001EB46B /* Edit.m in Sources */ = {isa = PBXBuildFile; fileRef = A3CE97EE14F8B7B0001EB46B /* Edit.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,6 +117,8 @@
 		A3ABA6F51493832B0071D53D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A3ABA6F71493832B0071D53D /* SmartGeometryTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SmartGeometryTests.h; sourceTree = "<group>"; };
 		A3ABA6F91493832B0071D53D /* SmartGeometryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SmartGeometryTests.m; sourceTree = "<group>"; };
+		A3CE97ED14F8B7B0001EB46B /* Edit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Edit.h; sourceTree = "<group>"; };
+		A3CE97EE14F8B7B0001EB46B /* Edit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Edit.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -182,6 +185,8 @@
 				A377032114C8134900DFEEAC /* SCCurveGraph.m */,
 				A37B0A7B1499233600CF2587 /* SCRectangleGraph.h */,
 				A37B0A7C1499233600CF2587 /* SCRectangleGraph.m */,
+				A3CE97ED14F8B7B0001EB46B /* Edit.h */,
+				A3CE97EE14F8B7B0001EB46B /* Edit.m */,
 				0A360531149690D2000B9062 /* Gunit.h */,
 				0A360532149690D2000B9062 /* Gunit.m */,
 				A396058014B6DC5700D521B7 /* CurveUnit.h */,
@@ -399,6 +404,7 @@
 				A37B0A7D1499233700CF2587 /* SCRectangleGraph.m in Sources */,
 				A396058214B6DC5700D521B7 /* CurveUnit.m in Sources */,
 				A377032214C8134900DFEEAC /* SCCurveGraph.m in Sources */,
+				A3CE97EF14F8B7B0001EB46B /* Edit.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

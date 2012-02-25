@@ -14,12 +14,17 @@
 @synthesize local_graph_id;
 @synthesize graphType;
 @synthesize isDraw;
+@synthesize isSelected;
 
 - (id)init
 {
     self = [super init];
-    if (self) {
+    if (self) 
+    {
         // Initialization code here.
+        isDraw = YES;
+        isSelected = NO;
+        constraintList = [[NSMutableArray alloc]init];
     }
     
     return self;
@@ -27,18 +32,24 @@
 
 -(id)initWithId:(int)temp_local_graph_id
 {
+    [super init];
+    
     local_graph_id = temp_local_graph_id;
     isDraw = YES;
+    isSelected = NO;
+    
+    return self;
 }
 
 -(id)initWithId:(int)temp_local_graph_id andType:(GraphType)graphType1
 {
+    [super init];
+    
     self.local_graph_id = temp_local_graph_id;
     self.graphType      = graphType1;
     isDraw              = YES;
+    isSelected          = NO;
     constraintList      = [[NSMutableArray alloc]init];
-    
-    [self init];
     
     return self;
 }

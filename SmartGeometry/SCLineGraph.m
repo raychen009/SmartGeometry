@@ -17,8 +17,10 @@
 - (id)init
 {
     self = [super init];
-    if (self) {
+    if (self) 
+    {
         // Initialization code here.
+        self.graphType = Line_Graph;
     }
     
     return self;
@@ -26,6 +28,8 @@
 
 -(id)initWithLine:(LineUnit *)lineUnit1 andId:(int)temp_local_graph_id
 {
+    [self init];
+    
     lineUnit = [[LineUnit alloc]init];
     lineUnit = lineUnit1;
     hasEnd = hasStart = NO;

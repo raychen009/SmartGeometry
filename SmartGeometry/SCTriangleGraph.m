@@ -15,12 +15,14 @@
 - (id)init
 {
     self = [super init];
-    if (self) {
+    if (self) 
+    {
         // Initialization code here.
         triangleAngles       = [[NSMutableArray alloc]init];
         triangleLines        = [[NSMutableArray alloc]init];
         triangleVertexes     = [[NSMutableArray alloc]init];
         triangleLineDistance = [[NSMutableArray alloc]init];
+        self.graphType = Triangle_Graph;
     }
     
     return self;

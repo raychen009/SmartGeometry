@@ -37,8 +37,8 @@
         
         center = [[SCPoint alloc]init];
         move   = [[SCPoint alloc]init];
-        self.start  = [[SCPoint alloc]init];
-        self.end    = [[SCPoint alloc]init];
+//        self.start  = [[SCPoint alloc]init];
+//        self.end    = [[SCPoint alloc]init];
         f1     = [[SCPoint alloc]init];
         f2     = [[SCPoint alloc]init];
         testS  = [[SCPoint alloc]init];
@@ -65,8 +65,8 @@
     
     isHalfCurve     = NO;
     isCompleteCurve = NO;
- //   isSelected      = NO;
     hasSecondJudge  = NO;
+    self.isSelected = NO;
     
     return self;
 }
@@ -87,8 +87,8 @@
     
     isHalfCurve     = NO;
     isCompleteCurve = NO;
-    //isSelected      = NO;
     hasSecondJudge  = NO;
+    self.isSelected = NO;
     
     return self;
 }
@@ -109,8 +109,8 @@
     self.end.y = tempEnd.y;
     
     isHalfCurve = NO;
-    //isSelected  = NO;
     isCompleteCurve = NO;
+    self.isSelected = NO;
     
     float xArray[6] = {0};
     [self identifyWithPointArray:pointList XArray:xArray];
@@ -143,8 +143,8 @@
         
         isHalfCurve     = NO;
         isCompleteCurve = NO;
-        //isSelected      = NO;
         hasSecondJudge  = NO;
+        self.isSelected = NO;
         
         float xArray[6];
         [self identifyWithPointArray:pointList XArray:xArray];

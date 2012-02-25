@@ -13,11 +13,14 @@
 @synthesize start;
 @synthesize end;
 @synthesize type;
+@synthesize isSelected;
 
-- (id)init {
+- (id)init 
+{
     self = [super init];
-    if (self) {
-        isSelected=false;
+    if (self) 
+    {
+        //isSelected = NO;
         start = [[SCPoint alloc]init];
         end   = [[SCPoint alloc]init];
         start.x = 0;
@@ -32,6 +35,9 @@
 
 -(id)initWithStartPoint:(SCPoint *)s endPoint:(SCPoint *)e 
 {
+    [super init];
+    
+    type  = 0;
     start = [[SCPoint alloc]init];
     end   = [[SCPoint alloc]init];
     isSelected=false;
@@ -39,11 +45,15 @@
     start.y=s.y;
     end.x=e.x;
     end.y=e.y;
+    
     return self;
 }
 
 -(id)initWithPoints:(NSMutableArray *)points 
 {
+    [super init];
+    
+    type  = 0;
     start = [[SCPoint alloc]init];
     end   = [[SCPoint alloc]init];
     isSelected=false;

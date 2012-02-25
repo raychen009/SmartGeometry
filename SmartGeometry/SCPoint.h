@@ -8,7 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SCPoint : NSObject{
+@interface SCPoint : NSObject
+{
     float x,y;
     float originalX;
     float originalY;

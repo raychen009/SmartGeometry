@@ -20,7 +20,7 @@
         // Initialization code here.
         curveUnit = [[CurveUnit alloc]init];
         [self initWithId:-1];
-        graphType = Curver_Graph;
+        self.graphType = Curver_Graph;
     }
     
     return self;

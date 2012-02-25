@@ -15,10 +15,12 @@
 - (id)init
 {
     self = [super init];
-    if (self) {
+    if (self) 
+    {
         // Initialization code here.
         rec_lines = [[NSMutableArray alloc]init];
         rec_vertexes = [[NSMutableArray alloc]init];
+        self.graphType = Rectangle_Graph;
     }
     
     return self;
@@ -27,6 +29,7 @@
 -(id)initWithLine0:(LineUnit*)line0 Line1:(LineUnit*)line1 Line2:(LineUnit*)line2 Line3:(LineUnit*)line3 Id:(int)temp_local_id
 {
     self = [super init];
+    
     SCGraph* graph = [[SCGraph alloc]initWithId:temp_local_id andType:Rectangle_Graph];
     
     rec_lines = [[NSMutableArray alloc]init];
