@@ -10,7 +10,7 @@
 
 @implementation LineUnit
 
-@synthesize k,b;
+@synthesize k,b,isCutLine,cutPoint;
 
 - (id)init
 {
@@ -22,6 +22,8 @@
         start.y=0;
         end.x=0;
         end.y=0;
+        isCutLine = NO;
+        self.isSelected = NO;
         [self setOriginal];
     }
     
@@ -31,6 +33,8 @@
 -(id)initWithPoints:(NSMutableArray *)points 
 {
     self = [super init];
+    isCutLine = NO;
+    self.isSelected = NO;
     SCPoint *s;
     SCPoint *e;
     s = [points objectAtIndex:0];
@@ -41,6 +45,8 @@
     start.y=s.y;
     end.x=e.x;
     end.y=e.y;
+    isCutLine = NO;
+    self.isSelected = NO;
     [self setOriginal];
     [self calculateK_B];
     return self;
@@ -51,14 +57,21 @@
     type=1;
     start=s;
     end=e;
+    isCutLine = NO;
+    self.isSelected = NO;
     [self calculateK_B];
     [self setOriginal];
     return self;
 }
 
--(void) setOriginal {
+-(void) setOriginal 
+{
     [start setOriginal];
     [end setOriginal];
+    if(isCutLine)
+    {
+        [cutPoint setOriginal];
+    }
 }
 
 -(BOOL)judge:(NSMutableArray *)pList {

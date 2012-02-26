@@ -16,6 +16,7 @@
 @synthesize is_on_line,is_on_circle;
 @synthesize belong_to_triangle,belong_to_rectangle;
 @synthesize in_graph_list;
+@synthesize vertexOfCurveCenter,vertexOfSpecialLine,cut_point_of_circles;
 
 - (id)init
 {
@@ -25,6 +26,9 @@
         // Initialization code here.
         self.graphType = Point_Graph;
         pointUnit = [[PointUnit alloc]init];
+        vertexOfCurveCenter = NO;
+        vertexOfSpecialLine = NO;
+        cut_point_of_circles = NO;
     }
     
     return self;
@@ -38,6 +42,7 @@
     freedomType    = 0;
     belong_to_triangle  = NO;
     belong_to_rectangle = NO;
+    is_vertex = NO;
     is_on_line = NO;
     is_on_circle = NO;
     in_graph_list = NO;

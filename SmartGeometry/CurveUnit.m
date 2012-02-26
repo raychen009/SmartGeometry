@@ -1535,6 +1535,40 @@
     
 }
 
+-(void)antiTranslateWithX:(float *)x WithY:(float *)y Theta:(float)theta Point:(SCPoint *)vector
+{
+    SCPoint* temp = [[SCPoint alloc]init];
+    float cos = cosf(theta);
+    float sin = sinf(theta);
+    //平移变换
+    temp.x = *x - vector.x;
+    temp.y = *y - vector.y;
+    //旋转变换
+    *x = (temp.x*cos + temp.y*sin);
+    *y = (temp.x*(-sin) + temp.y*cos);
+    
+    [temp release];
+    temp = NULL;
+}
+
+-(SCPoint*)antiTranslateWith:(SCPoint *)tempPoint Theta:(float)theta Point:(SCPoint *)vector
+{
+    SCPoint* temp = [[SCPoint alloc]init];
+    float cos = cosf(theta);
+    float sin = sinf(theta);
+    //平移变换
+    temp.x = tempPoint.x - vector.x;
+    temp.y = tempPoint.y - vector.y;
+    //旋转变换
+    tempPoint.x = (temp.x*cos + temp.y*sin);
+    tempPoint.y = (temp.x*(-sin) + temp.y*cos);
+    
+    [temp release];
+    temp = NULL;
+    
+    return tempPoint;
+}
+
 -(void)translateAndRotationWithX:(float*)x Y:(float*)y Theta:(float)theta Point:(SCPoint *)vector
 {
     SCPoint* temp = [[SCPoint alloc]init];

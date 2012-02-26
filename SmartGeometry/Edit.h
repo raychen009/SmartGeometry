@@ -15,6 +15,7 @@
 #import "SCRectangleGraph.h"
 #import "Gunit.h"
 #import "Constraint.h"
+#import "Threshold.h"
 
 typedef enum
 {
@@ -112,11 +113,11 @@ struct GraphVectorStruct
 
 //判断是moveMode或者stretchMode的编辑态
 -(void)isMoveOrStretchWithPoint1:(SCPoint *)point1 SelectedList:(NSMutableArray *)selectedList;
--(void)selectedMoveOrStretchWithPoint1:(SCPoint*)point1 Point2:(SCPoint*)point2 GraphList:(NSMutableArray*)graphList;
+-(void)selectedMoveOrStretchWithPrePoint:(SCPoint *)prePoint LastPoint:(SCPoint *)lastPoint SelectedList:(NSMutableArray *)selectedList;
 //把状态设置为selected
 -(void)setSelectedStateWithGraphList:(NSMutableArray*)graphList;
 //移动所有选中的图形
--(void)selectedGraphListMoveWithPoint:(SCPoint*)point GraphList:(NSMutableArray*)graphList;
+-(void)selectedGraphListMoveWithPoint:(SCPoint*)point SelectedList:(NSMutableArray*)selectedList;
 //返回旋转的中心点
 -(SCPoint*)returnRotationCenterWithGraph:(SCGraph*)graph;
 //旋转所有选中的图形

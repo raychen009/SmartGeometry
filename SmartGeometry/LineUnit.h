@@ -7,15 +7,22 @@
 //
 
 #import "Gunit.h"
+#import "SCPoint.h"
 #import "Threshold.h"
 
-@interface LineUnit : Gunit {
+@interface LineUnit : Gunit 
+{
     double k;// 斜 率
     double b;// 偏 移
+    
+    bool isCutLine;
+    SCPoint* cutPoint;
 }
 
 @property (readwrite) double k;
 @property (readwrite) double b;
+@property (readwrite) bool   isCutLine;
+@property (retain)    SCPoint* cutPoint;
 
 -(BOOL) judge:(NSMutableArray *) pList;// 计 算 出 直 线 的 相 关 系 数   通 过 相 关 系 数 进 行 判 断 是 否 为 直 线
 -(void) setstart:(SCPoint *) newstart;

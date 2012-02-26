@@ -97,7 +97,132 @@
         if([graphTemp isKindOfClass:[SCCurveGraph class]])
         {
             SCCurveGraph* curveGraphTemp = (SCCurveGraph*)graphTemp;
+            [curveGraphTemp.curveUnit antiTranslateWith:p Theta:curveGraphTemp.curveUnit.alpha Point:curveGraphTemp.curveUnit.move];
+            if([Threshold Distance:p :curveGraphTemp.curveUnit.end] < IS_SELECT_POINT)
+            {
+                [stretchGraphList addObject:curveGraphTemp];
+                editParameters[2] = YES;
+                return;
+            }
+        }
+    }
+    for(int i=0; i<[selectedList count]; i++)
+    {
+        SCGraph* graphTemp = [selectedList objectAtIndex:i];
+        if([graphTemp isKindOfClass:[SCPointGraph class]])
+        {
+            SCPointGraph* pointGraphTemp = (SCPointGraph*)graphTemp;
+            if(pointGraphTemp.freedomType > 2)
+            {
+                editParameters[1] = true;
+                return;
+            }
+        }
+    }
+    for(int i=0; i<[selectedList count]; i++)
+    {
+        SCGraph* graphTemp = [selectedList objectAtIndex:i];
+        if([graphTemp isKindOfClass:[SCPointGraph class]])
+        {
+            SCPointGraph* pointGraphTemp = (SCPointGraph*)graphTemp;
+            bool isStretchCutLine = NO;
+            for(int i=0; i<[pointGraphTemp.constraintList count]; i++)
+            {
+                Constraint* constraint = [pointGraphTemp.constraintList objectAtIndex:i];
+                if([constraint.relatedGraph isKindOfClass:[SCLineGraph class]])
+                {
+                    SCLineGraph* lineGraphTemp = (SCLineGraph*)constraint.relatedGraph;
+                    if(lineGraphTemp.lineUnit.isCutLine)
+                    {
+                        isStretchCutLine = YES;
+                    }
+                }
+            }
+            if(isStretchCutLine)
+                continue;
+            if(pointGraphTemp.freedomType < 2)
+            {
+                float distance = [Threshold Distance:pointGraphTemp.pointUnit.start :[[SCPoint alloc]initWithX:p.x andY:p.y]];
+                if(distance < IS_SELECT_POINT)
+                {
+                    editParameters[2] = true;
+                    [stretchGraphList addObject:pointGraphTemp];
+                    return;
+                }
+            }
+        }
+    }
+    for(int i=0; i<[selectedList count]; i++)
+    {
+        SCGraph* graphTemp = [selectedList objectAtIndex:i];
+        if([graphTemp isKindOfClass:[SCRectangleGraph class]])
+        {
+            SCRectangleGraph* rectangleGraph = (SCRectangleGraph*)graphTemp;
+            float distanceTemp = 0.0;
+            for(int i=0; i<4; i++)
+            {
+                LineUnit* line = [rectangleGraph.rec_lines objectAtIndex:i];
+                distanceTemp += [Threshold Distance:line.start :line.end]*[Threshold pointToLIne:[[SCPoint alloc]initWithX:p.x andY:p.y] :line];
+            }
+            SCPoint* vertex0 = [rectangleGraph.rec_vertexes objectAtIndex:0];
+            SCPoint* vertex1 = [rectangleGraph.rec_vertexes objectAtIndex:1];
+            SCPoint* vertex2 = [rectangleGraph.rec_vertexes objectAtIndex:2];
+            SCPoint* vertex3 = [rectangleGraph.rec_vertexes objectAtIndex:3];
+            LineUnit* line = [[LineUnit alloc]initWithStartPoint:vertex0 endPoint:vertex2];
+            float s = [Threshold Distance:vertex0 :vertex2]*[Threshold pointToLIne:vertex1 :line]
+                    + [Threshold Distance:vertex0 :vertex2]*[Threshold pointToLIne:vertex3 :line];
+            [line release];
+            line = NULL;
+            if(distanceTemp/s < 1.2)
+            {
+                for(int i=0; i<4; i++)
+                {
+                    LineUnit* line = [rectangleGraph.rec_lines objectAtIndex:i];
+                    if([Threshold pointToLIne:[[SCPoint alloc]initWithX:p.x andY:p.y] :line] < IS_SELECT_LINE)
+                    {
+                        [stretchGraphList addObject:rectangleGraph];
+                        whichLineRectangle = i;
+                        editParameters[2] = YES;
+                        return;
+                    }
+                }
+            }
             
+        }
+    }
+    if(!editParameters[2])
+    {
+        editParameters[1] = YES;
+    }
+}
+
+//在touchmove调用
+-(void)selectedMoveOrStretchWithPrePoint:(SCPoint *)prePoint LastPoint:(SCPoint *)lastPoint SelectedList:(NSMutableArray *)selectedList
+{
+    if(editParameters[1])
+    {
+        [self selectedGraphListMoveWithPoint:[[SCPoint alloc]initWithX:lastPoint.x-prePoint.x andY:lastPoint.y-prePoint.y] SelectedList:selectedList];
+    }
+    else if(editParameters[2])
+    {
+        for(int i=0; i<[stretchGraphList count]; i++)
+        {
+            SCGraph* graphTemp = [stretchGraphList objectAtIndex:i];
+            if([graphTemp isKindOfClass:[SCPointGraph class]])
+            {
+                SCPointGraph* pointGraph = (SCPointGraph*)graphTemp;
+                if(pointGraph.vertexOfSpecialLine == NO && pointGraph.vertexOfCurveCenter == NO)
+                {
+                    SCPoint* pointTemp = [[SCPoint alloc]initWithX:prePoint.x andY:prePoint.y];
+                    [pointGraph setPoint:pointTemp];
+                    [pointGraph keepConstraintWithPoint:pointTemp]; 
+                }
+            }
+            else if([graphTemp isKindOfClass:[SCTriangleGraph class]])
+            {
+                SCTriangleGraph* triangleGraph = (SCTriangleGraph*)graphTemp;
+                
+            }
         }
     }
 }

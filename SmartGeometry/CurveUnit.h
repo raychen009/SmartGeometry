@@ -189,5 +189,6 @@
 -(SCPoint*)translateAndRotationWithPoint:(SCPoint*)tempPoint Theta:(float)theta Point:(SCPoint*)vector;
 -(SCPoint*)rotationWithPoint:(SCPoint*)tempPoint Theta:(float)theta;
 -(SCPoint*)translateWithPoint:(SCPoint*)tempPoint Vector:(SCPoint*)vector;
-
+-(void)antiTranslateWithX:(float*)x WithY:(float*)y Theta:(float)theta Point:(SCPoint*)vector;
+-(SCPoint*)antiTranslateWith:(SCPoint*)tempPoint Theta:(float)theta Point:(SCPoint*)vector;
 @end

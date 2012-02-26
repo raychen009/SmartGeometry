@@ -14,6 +14,7 @@
 #import "SCLineGraph.h"
 
 @class LineUnit;
+@class CurveUnit;
 @interface SCPointGraph : SCGraph
 {
     PointUnit* pointUnit;
@@ -26,6 +27,10 @@
     bool belong_to_triangle;
     bool belong_to_rectangle;
     bool in_graph_list;
+    bool cut_point_of_circles; //标识是否为两个圆的切点
+    
+    bool vertexOfCurveCenter; //只为半径标识
+    bool vertexOfSpecialLine; //标识它是否为三角形特殊线的落在三角形边上的断点，在KEEP的时候有用
     
 }
 
@@ -37,8 +42,19 @@
 @property (readwrite)   bool            belong_to_triangle;
 @property (readwrite)   bool            belong_to_rectangle;
 @property (readwrite)   bool            in_graph_list;
+@property (readwrite)   bool            cut_point_of_circles;
+@property (readwrite)   bool            vertexOfCurveCenter;
+@property (readwrite)   bool            vertexOfSpecialLine;
 
 -(id)initWithUnit:(PointUnit*)pointUnit andId:(int)temp_local_graph_id;
+
+//总领函数，用于直接拖动点的时候用，传进一个点的坐标，然后根据点所在的直线的性质不同，传不同的参数给keepOnLine和keepOnCircle
+-(void)keepConstraintWithPoint:(SCPoint*)pointTemp;
+-(void)keepOnLine:(LineUnit*)LineTemp WithPoint:(SCPoint*)pointTemp;
+//当某一个顶点动了的时候，可以调用这个函数来调整那些以它作为端点的直线，而不是调用总的keepConstraint
+-(void)keepVertexOfLine:(SCGraph*)graphTemp;
+-(void)keepTriangleAndRectangle:(SCGraph*)graphTemp;
+-(SCPoint*)keepOnCircle:(CurveUnit*)unit WithPoint:(SCPoint*)point;
 
 -(void)setPoint:(SCPoint*)point;
 -(Boolean)isUndo;
