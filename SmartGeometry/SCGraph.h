@@ -13,6 +13,7 @@
 
 @class Constraint;
 @class ConstraintGraph;
+
 @interface SCGraph : NSObject
 {
     int local_graph_id;
@@ -35,8 +36,18 @@
 
 -(id)initWithId:(int)temp_local_graph_id;
 -(id)initWithId:(int)temp_local_graph_id andType:(GraphType)graphType1;
--(void)clearConstraint;
--(void)constructConstraintGraph1:(SCGraph*)graph1 Type1:(ConstraintType)type1 Graph2:(SCGraph*)graph2 Type2:(ConstraintType)type2;
 -(void)drawWithContext:(CGContextRef)context;
+
+-(void)constructConstraintGraph1:(SCGraph*)graph1 Type1:(ConstraintType)type1 Graph2:(SCGraph*)graph2 Type2:(ConstraintType)type2;
+-(Boolean)recognizeConstraintWithGraph:(SCGraph*)graphTemp PointList:(NSMutableArray*)pointList;
+-(void)clearConstraint;
+
+//基本编辑操作
+-(void)translationWithPoint:(SCPoint*)point;
+-(void)rotationWithAngle:(const float)angle Center:(const SCPoint*)rotaitonCenter;
+-(void)scaleWithFactor:(const float)scaleFactor;
+-(Boolean)graphIsSelectedWithPoint:(SCPoint*)pointTemp;
+-(void)setSelectedWithBool:(const bool)boolValue;
+-(void)setOriginal;
 
 @end

@@ -11,6 +11,7 @@
 @implementation SCTriangleGraph
 
 @synthesize triangleLines,triangleAngles,triangleVertexes,triangleLineDistance;
+@synthesize triangleType,typeVertexIndex;
 
 - (id)init
 {

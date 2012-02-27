@@ -10,7 +10,7 @@
 
 @implementation SCPointGraph
 
-@synthesize freedomType;
+@synthesize freedomType,curve_start_end;
 @synthesize pointUnit;
 @synthesize is_vertex;
 @synthesize is_on_line,is_on_circle;

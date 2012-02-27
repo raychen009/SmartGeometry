@@ -221,8 +221,22 @@
             else if([graphTemp isKindOfClass:[SCTriangleGraph class]])
             {
                 SCTriangleGraph* triangleGraph = (SCTriangleGraph*)graphTemp;
-                
+                [triangleGraph followPointGraph];
+                [triangleGraph keepConstraintWithGraph:NULL];
+                [triangleGraph updateRelatedValues];
+                triangleGraph.triangleType = OridinaryTriangle;
+                break;
             }
+            else if([graphTemp isKindOfClass:[SCRectangleGraph class]])
+            {
+                SCRectangleGraph* rectangleGraph = (SCRectangleGraph*)graphTemp;
+                if(whichLineRectangle == -1)
+                    [rectangleGraph keepConstraint];
+                else
+                    [rectangleGraph stretchWithLineIndex:whichLineRectangle Point:[[SCPoint alloc]initWithX:lastPoint.x-prePoint.x andY:lastPoint.y-prePoint.y]];
+                break;
+            }
+            
         }
     }
 }

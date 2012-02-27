@@ -20,6 +20,7 @@
     PointUnit* pointUnit;
     
     int freedomType;
+    int curve_start_end;//1为起点，2为终点
     
     bool is_vertex;
     bool is_on_line;
@@ -36,6 +37,7 @@
 
 @property (retain)      PointUnit*      pointUnit;
 @property (readwrite)   int             freedomType;
+@property (readwrite)   int             curve_start_end;
 @property (readwrite)   bool            is_vertex;
 @property (readwrite)   bool            is_on_line;
 @property (readwrite)   bool            is_on_circle;
@@ -65,5 +67,13 @@
 -(void)draw_extension_line:(CGContextRef)context;
 -(void)draw_dot_lineFromStart:(SCPoint*)startPoint ToEnd:(SCPoint*)endPoint WithContext:(CGContextRef)context;
 -(void)draw_line_dot_extension_line:(LineUnit*)lineUnit WithContext:(CGContextRef)context;
+
+//编辑操作的相关函数
+-(void)translationWithPoint:(SCPoint *)point;
+-(void)rotationWithAngle:(const float)angle Center:(const SCPoint *)rotaitonCenter;
+-(void)scaleWithFactor:(const float)scaleFactor;
+-(Boolean)graphIsSelectedWithPoint:(SCPoint *)pointTemp;
+-(void)setSelectedWithBool:(const _Bool)boolValue;
+-(void)setOriginal;
 
 @end
