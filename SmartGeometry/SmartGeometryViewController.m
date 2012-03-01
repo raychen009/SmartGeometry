@@ -21,7 +21,8 @@
     BroadView* broadView = [[BroadView alloc]initWithFrame:CGRectMake(0.0, 0.0, 1024, 748)];
     [self.view addSubview:broadView];
     [broadView viewJustLoaded];
-    broadView.backgroundColor = [UIColor whiteColor];
+    broadView.backgroundColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0];
+    broadView.owner = self;
     
 }
 

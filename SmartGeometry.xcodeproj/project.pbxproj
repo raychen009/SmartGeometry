@@ -44,6 +44,8 @@
 		A3ABA6F61493832B0071D53D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A3ABA6F41493832B0071D53D /* InfoPlist.strings */; };
 		A3ABA6F81493832B0071D53D /* SmartGeometryTests.h in Resources */ = {isa = PBXBuildFile; fileRef = A3ABA6F71493832B0071D53D /* SmartGeometryTests.h */; };
 		A3ABA6FA1493832B0071D53D /* SmartGeometryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A3ABA6F91493832B0071D53D /* SmartGeometryTests.m */; };
+		A3B885E714FF4C3C003B8B05 /* 0001.png in Resources */ = {isa = PBXBuildFile; fileRef = A3B885E614FF4C3C003B8B05 /* 0001.png */; };
+		A3B885F114FF50D3003B8B05 /* GraphImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = A3B885F014FF50D3003B8B05 /* GraphImageView.m */; };
 		A3CE97EF14F8B7B0001EB46B /* Edit.m in Sources */ = {isa = PBXBuildFile; fileRef = A3CE97EE14F8B7B0001EB46B /* Edit.m */; };
 /* End PBXBuildFile section */
 
@@ -117,6 +119,9 @@
 		A3ABA6F51493832B0071D53D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A3ABA6F71493832B0071D53D /* SmartGeometryTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SmartGeometryTests.h; sourceTree = "<group>"; };
 		A3ABA6F91493832B0071D53D /* SmartGeometryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SmartGeometryTests.m; sourceTree = "<group>"; };
+		A3B885E614FF4C3C003B8B05 /* 0001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = 0001.png; path = SmartGeometryTests/0001.png; sourceTree = SOURCE_ROOT; };
+		A3B885EF14FF50D3003B8B05 /* GraphImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GraphImageView.h; sourceTree = "<group>"; };
+		A3B885F014FF50D3003B8B05 /* GraphImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GraphImageView.m; sourceTree = "<group>"; };
 		A3CE97ED14F8B7B0001EB46B /* Edit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Edit.h; sourceTree = "<group>"; };
 		A3CE97EE14F8B7B0001EB46B /* Edit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Edit.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -181,6 +186,8 @@
 			children = (
 				0A36052F149690D1000B9062 /* BroadView.h */,
 				0A360530149690D1000B9062 /* BroadView.m */,
+				A3B885EF14FF50D3003B8B05 /* GraphImageView.h */,
+				A3B885F014FF50D3003B8B05 /* GraphImageView.m */,
 				A377032014C8134900DFEEAC /* SCCurveGraph.h */,
 				A377032114C8134900DFEEAC /* SCCurveGraph.m */,
 				A37B0A7B1499233600CF2587 /* SCRectangleGraph.h */,
@@ -231,6 +238,7 @@
 		A3ABA6D01493832B0071D53D /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A3B885E614FF4C3C003B8B05 /* 0001.png */,
 				A38379811494694B00D0384F /* undo.png */,
 				A38379821494694B00D0384F /* redo.png */,
 				A38379831494694B00D0384F /* delete.png */,
@@ -335,6 +343,7 @@
 				A38379841494694B00D0384F /* undo.png in Resources */,
 				A38379851494694B00D0384F /* redo.png in Resources */,
 				A38379861494694B00D0384F /* delete.png in Resources */,
+				A3B885E714FF4C3C003B8B05 /* 0001.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,6 +414,7 @@
 				A396058214B6DC5700D521B7 /* CurveUnit.m in Sources */,
 				A377032214C8134900DFEEAC /* SCCurveGraph.m in Sources */,
 				A3CE97EF14F8B7B0001EB46B /* Edit.m in Sources */,
+				A3B885F114FF50D3003B8B05 /* GraphImageView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

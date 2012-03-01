@@ -201,7 +201,7 @@
 {
     if(editParameters[1])
     {
-        [self selectedGraphListMoveWithPoint:[[SCPoint alloc]initWithX:lastPoint.x-prePoint.x andY:lastPoint.y-prePoint.y] SelectedList:selectedList];
+        [self selectedGraphListMove:[[SCPoint alloc]initWithX:lastPoint.x-prePoint.x andY:lastPoint.y-prePoint.y] SelectedList:selectedList];
     }
     else if(editParameters[2])
     {
@@ -236,9 +236,168 @@
                     [rectangleGraph stretchWithLineIndex:whichLineRectangle Point:[[SCPoint alloc]initWithX:lastPoint.x-prePoint.x andY:lastPoint.y-prePoint.y]];
                 break;
             }
+            else if([graphTemp isKindOfClass:[SCCurveGraph class]])
+            {
+                SCCurveGraph* curveGraph = (SCCurveGraph*)graphTemp;
+                [curveGraph stretchWithPoint:lastPoint];
+                break;
+            }
             
         }
     }
+}
+
+-(void)setSelectedStateWithSelectedList:(NSMutableArray *)selectedList
+{
+    for(int i=0; i<[selectedList count]; i++)
+    {
+        SCGraph* graph = [selectedList objectAtIndex:i];
+        [graph setSelectedWithBool:NO];
+    }
+}
+
+-(void)selectedGraphListMove:(SCPoint *)move SelectedList:(NSMutableArray *)selectedList
+{
+    for(int i=0; i<[selectedList count]; i++)
+    {
+        SCGraph* graph = [selectedList objectAtIndex:i];
+        [graph translationWithPoint:move];
+    }
+}
+
+-(SCPoint*)returnRotationCenterWithGraph:(SCGraph *)graph
+{
+    if([graph isKindOfClass:[SCLineGraph class]])
+    {
+        SCLineGraph* lineGraphTemp = (SCLineGraph*)graph;
+        return [[SCPoint alloc]initWithX:(lineGraphTemp.lineUnit.start.originalX + lineGraphTemp.lineUnit.end.originalX)/2 andY:(lineGraphTemp.lineUnit.start.originalY + lineGraphTemp.lineUnit.end.originalY)/2];  
+    }
+    else if([graph isKindOfClass:[SCCurveGraph class]])
+    {
+        SCCurveGraph* curveGraphTemp = (SCCurveGraph*)graph;
+        return [[SCPoint alloc]initWithX:curveGraphTemp.curveUnit.center.originalX andY:curveGraphTemp.curveUnit.center.originalY];
+    }
+    else if([graph isKindOfClass:[SCTriangleGraph class]])
+    {
+        SCTriangleGraph* triangleGraphTemp = (SCTriangleGraph*)graph;
+        SCPoint* temp = [[SCPoint alloc]initWithX:0 andY:0];
+        for(int i=0; i<[triangleGraphTemp.triangleVertexes count]; i++)
+        {
+            SCPoint* vertexTemp = [triangleGraphTemp.triangleVertexes objectAtIndex:i]; 
+            temp.x += (vertexTemp.x/3);
+            temp.y += (vertexTemp.y/3);
+        }
+        return temp;
+    }
+    else if([graph isKindOfClass:[SCRectangleGraph class]])
+    {
+        SCRectangleGraph* rectangleGraphTemp = (SCRectangleGraph*)graph;
+        return [rectangleGraphTemp calculateDiagonalIntersectionPoint];
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+-(void)selectedGraphListRotationWithAngle:(float)angle SelectedList:(NSMutableArray *)selectedList
+{
+    int i = 0;
+    SCGraph* graphTemp = [selectedList objectAtIndex:i];
+    while ([graphTemp isKindOfClass:[SCPointGraph class]]) 
+    {
+        i++;
+        graphTemp = [selectedList objectAtIndex:i];
+    }
+    bool whole = NO;
+    for(int i=0; i<[selectedList count]; i++)
+    {
+        SCGraph* graphTemp = [selectedList objectAtIndex:i];
+        if([graphTemp isKindOfClass:[SCPointGraph class]])
+        {
+            SCPointGraph* pointGraphTemp = (SCPointGraph*)graphTemp;
+            if(pointGraphTemp.freedomType > 2)
+            {
+                whole = YES;
+            }
+            for(int j=0; j<[pointGraphTemp.constraintList count]; j++)
+            {
+                Constraint* constraint = [pointGraphTemp.constraintList objectAtIndex:i];
+                if([constraint.relatedGraph isKindOfClass:[SCLineGraph class]])
+                {
+                    SCLineGraph* lineGraphTemp = (SCLineGraph*)constraint.relatedGraph;
+                    if(lineGraphTemp.lineUnit.isCutLine && (constraint.constraintType == Start_Vertex_Of_Line || constraint.constraintType == End_Vertex_Of_Line))
+                    {
+                        whole = YES;
+                    }
+                }
+            }
+        }
+    }
+    graphTemp = [selectedList objectAtIndex:i]; 
+    SCPoint* rotationCenter = [self returnRotationCenterWithGraph:graphTemp];
+    if(whole || ([graphTemp isKindOfClass:[SCLineGraph class]]))
+    {
+        for (SCGraph* graph in selectedList) 
+        {
+            [graph rotationWithAngle:angle Center:rotationCenter];
+        }
+    }
+    else
+    {
+        if([graphTemp isKindOfClass:[SCCurveGraph class]])
+        {
+            SCCurveGraph* curveGraph = (SCCurveGraph*)graphTemp;
+            curveGraph.curveUnit.alpha = curveGraph.curveUnit.originalAlpha - angle;
+        }
+        else if([graphTemp isKindOfClass:[SCTriangleGraph class]])
+        {
+            SCTriangleGraph* triangleGraph = (SCTriangleGraph*)graphTemp;
+            SCPoint* pointTemp = [[SCPoint alloc]init];
+            for(int i=0; i<[triangleGraph.triangleVertexes count]; i++)
+            {
+                SCPoint* vertexTemp = [triangleGraph.triangleVertexes objectAtIndex:i];
+                [pointTemp setX:vertexTemp.originalX];
+                [pointTemp setY:vertexTemp.originalY];
+                vertexTemp = [triangleGraph calculatePointAfterRotationWithMove:rotationCenter Angle:angle Center:pointTemp];
+                LineUnit* lineTemp = [triangleGraph.triangleLines objectAtIndex:i];
+                if(lineTemp.isCutLine)
+                {
+                    [pointTemp setX:lineTemp.cutPoint.originalX];
+                    [pointTemp setY:lineTemp.cutPoint.originalY];
+                    lineTemp.cutPoint = [triangleGraph calculatePointAfterRotationWithMove:rotationCenter Angle:angle Center:pointTemp];
+                }
+            }
+            
+            [triangleGraph changeTriangleLines];
+            [triangleGraph adjustPointGraph];
+            [triangleGraph updateRelatedValues];
+            [triangleGraph keepConstraintWithGraph:graphTemp Angle:angle RotationCenter:rotationCenter];
+            for(Constraint* constraint in triangleGraph.constraintList)
+            {
+                if(constraint.constraintType == Vertex0_Of_Triangle || constraint.constraintType == Vertex2_Of_Triangle ||
+                   constraint.constraintType == Vertex1_Of_Triangle)
+                {
+                    SCPointGraph* pointGraph = (SCPointGraph*)constraint.relatedGraph;
+                    for(Constraint* constraint in pointGraph.constraintList)
+                    {
+                        if(constraint.constraintType == Point_On_Line)
+                        {
+                            SCLineGraph* lineGraph = (SCLineGraph*)constraint.relatedGraph;
+                            [lineGraph rotationWithAngle:angle Center:rotationCenter];
+                            [lineGraph adjustPointGraph];
+                            [lineGraph keepConstraint];
+                        }
+                        if(constraint.constraintType == Point_On_Circle)
+                        {
+//                            SCCurveGraph* curveGraph
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 @end

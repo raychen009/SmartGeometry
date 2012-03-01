@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "GraphImageView.h"
 #import "UnitFactory.h"
 
 @interface BroadView : UIView
@@ -29,6 +30,10 @@
     
     CGContextRef context;
     UnitFactory* factory;
+    Boolean hasDrawed;
+    
+    
+    GraphImageView* graphImageView;
     
     id owner;
 }
@@ -49,9 +54,11 @@
 @property (retain)      NSMutableArray*     pointGraphList;
 @property (retain)      NSMutableArray*     saveGraphList;
 
-@property (readwrite)      CGContextRef        context;
+@property (readwrite)   CGContextRef        context;
 @property (retain)      UnitFactory*        factory;
-@property (assign)      id              owner;
+@property (assign)      id                  owner;
+@property (readwrite)   Boolean             hasDrawed;
+@property (retain)      GraphImageView*        graphImageView;
 
 -(void) viewJustLoaded;
 -(void) undoFunc:(id)sender;

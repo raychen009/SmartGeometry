@@ -115,13 +115,13 @@ struct GraphVectorStruct
 -(void)isMoveOrStretchWithPoint1:(SCPoint *)point1 SelectedList:(NSMutableArray *)selectedList;
 -(void)selectedMoveOrStretchWithPrePoint:(SCPoint *)prePoint LastPoint:(SCPoint *)lastPoint SelectedList:(NSMutableArray *)selectedList;
 //把状态设置为selected
--(void)setSelectedStateWithGraphList:(NSMutableArray*)graphList;
+-(void)setSelectedStateWithSelectedList:(NSMutableArray*)selectedList;
 //移动所有选中的图形
--(void)selectedGraphListMoveWithPoint:(SCPoint*)point SelectedList:(NSMutableArray*)selectedList;
+-(void)selectedGraphListMove:(SCPoint *)move SelectedList:(NSMutableArray *)selectedList;
 //返回旋转的中心点
 -(SCPoint*)returnRotationCenterWithGraph:(SCGraph*)graph;
 //旋转所有选中的图形
--(void)selectedGraphListRotationWithAngle:(float)angle GraphList:(NSMutableArray*)graphList;
+-(void)selectedGraphListRotationWithAngle:(float)angle SelectedList:(NSMutableArray*)selectedList;
 //缩放所有选中的图形
 -(void)selectedGraphListScaleWithScaleFactor:(float)scaleFactor GraphList:(NSMutableArray*)graphList;
 

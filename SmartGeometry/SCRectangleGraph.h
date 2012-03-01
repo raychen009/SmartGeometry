@@ -85,5 +85,6 @@ typedef enum
 -(SCPoint*)calculatePointAfterRotationWithMove:(const SCPoint*)move Angle:(const float)angle Center:(SCPoint *)rotationCenter;
 -(void)changeRectangleLines;
 -(void)stretchWithLineIndex:(int)whichLine Point:(SCPoint*)move;
+-(SCPoint*)calculateDiagonalIntersectionPoint;
 
 @end
